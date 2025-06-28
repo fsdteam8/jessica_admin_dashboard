@@ -64,6 +64,9 @@ const fetchUsers = async (
   return response.json();
 };
 
+
+
+
 const transformUsers = (apiUsers: ApiUser[]): DisplayUser[] => {
   return apiUsers.map((user) => ({
     id: user.id,
@@ -102,20 +105,20 @@ const columns = [
   { key: "deliveredOrder", label: "Delivered Order" },
   { key: "pendingOrder", label: "Pending Order" },
   { key: "cancelOrder", label: "Cancel Order" },
-  {
-    key: "action",
-    label: "Action",
-    render: (_: unknown, row: DisplayUser) => (
-      <Button
-        variant="outline"
-        size="sm"
-        className="bg-slate-600 text-white hover:bg-slate-700"
-        onClick={() => console.log("View details for user:", row.id)}
-      >
-        Details
-      </Button>
-    ),
-  },
+  // {
+  //   key: "action",
+  //   label: "Action",
+  //   render: (_: unknown, row: DisplayUser) => (
+  //     <Button
+  //       variant="outline"
+  //       size="sm"
+  //       className="bg-slate-600 text-white hover:bg-slate-700"
+  //       onClick={() => console.log("View details for user:", row.id)}
+  //     >
+  //       Details
+  //     </Button>
+  //   ),
+  // },
 ];
 
 export default function UserProfilePage() {
@@ -215,7 +218,7 @@ export default function UserProfilePage() {
             </Card>
           </div>
 
-          <div className="mb-4 flex items-center justify-between">
+          {/* <div className="mb-4 flex items-center justify-between">
             <p className="text-sm text-gray-600">
               Showing {displayUsers.length} of {totalItems} users
             </p>
@@ -224,7 +227,7 @@ export default function UserProfilePage() {
                 Page {currentPage} of {totalPages}
               </span>
             </div>
-          </div>
+          </div> */}
 
           <DataTable
             columns={columns}

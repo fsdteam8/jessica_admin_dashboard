@@ -168,56 +168,54 @@ export default function CategoriesPage() {
   };
 
   return (
-    <div className="flex h-screen">
-      <div className="flex-1 overflow-auto">
-        <div className="p-6 bg-[#EDEEF1]">
-          <div className="mb-10">
-            <PageHeader
-              onButtonClick={handleAddCategory}
-              title="Practice Areas List"
-              buttonText="Add Practice Area"
-            />
-            <p className="text-gray-500 -mt-4">
-              Dashboard &gt; Practice_Areas_List
-            </p>
-          </div>
-
-          {isLoading ? (
-            <div className="flex h-[60vh] items-center justify-center bg-gray-50">
-              <div className="text-center">
-                {/* Optional: Remove this if you only want MoonLoader */}
-                {/* <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-600 mx-auto mb-4"></div> */}
-                <PuffLoader
-                  color="rgba(49, 23, 215, 1)"
-                  cssOverride={{}}
-                  loading
-                  speedMultiplier={1}
-                />
-              </div>
-            </div>
-          ) : isError ? (
-            <div className="text-red-500 text-center font-medium">
-              Failed to load data. Please try again later.
-            </div>
-          ) : isEmpty ? (
-            <div className="text-gray-500 text-center font-medium">
-              No practice areas found.
-            </div>
-          ) : (
-            <DataTable
-              columns={columns}
-              data={currentData || []}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalItems}
-              itemsPerPage={itemsPerPage}
-              onPageChange={setCurrentPage}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              isDeleting={deleteMutation.isPending}
-            />
-          )}
+    <div className="min-h-screen">
+      <div className="p-6 bg-[#EDEEF1]">
+        <div className="mb-10">
+          <PageHeader
+            onButtonClick={handleAddCategory}
+            title="Practice Areas List"
+            buttonText="Add Practice Area"
+          />
+          <p className="text-gray-500 -mt-4">
+            Dashboard &gt; Practice_Areas_List
+          </p>
         </div>
+
+        {isLoading ? (
+          <div className="flex h-[60vh] items-center justify-center bg-gray-50">
+            <div className="text-center">
+              {/* Optional: Remove this if you only want MoonLoader */}
+              {/* <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-600 mx-auto mb-4"></div> */}
+              <PuffLoader
+                color="rgba(49, 23, 215, 1)"
+                cssOverride={{}}
+                loading
+                speedMultiplier={1}
+              />
+            </div>
+          </div>
+        ) : isError ? (
+          <div className="text-red-500 text-center font-medium">
+            Failed to load data. Please try again later.
+          </div>
+        ) : isEmpty ? (
+          <div className="text-gray-500 text-center font-medium">
+            No practice areas found.
+          </div>
+        ) : (
+          <DataTable
+            columns={columns}
+            data={currentData || []}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            isDeleting={deleteMutation.isPending}
+          />
+        )}
       </div>
     </div>
   );

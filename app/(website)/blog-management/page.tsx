@@ -113,11 +113,11 @@ const columns: BlogColumn[] = [
       return ""
     },
   },
-  {
-    key: "comments",
-    label: "Comments",
-    render: () => "0",
-  },
+  // {
+  //   key: "comments",
+  //   label: "Comments",
+  //   render: () => "0",
+  // },
 ]
 
 export default function BlogManagementPage() {
