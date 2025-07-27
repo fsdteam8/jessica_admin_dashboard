@@ -14,6 +14,7 @@ interface CategoryBreadcrumbProps {
   subcategory?: string
 }
 
+
 export function CategoryBreadcrumb({ items }: CategoryBreadcrumbProps) {
   return (
     <nav className="flex items-center space-x-2 text-sm text-gray-500 mb-6">
