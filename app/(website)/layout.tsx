@@ -7,7 +7,6 @@ import "../globals.css";
 import { Sidebar } from "@/components/sidebar";
 import Header from "@/components/header";
 import AppProvider from "@/provider/AppProvider";
-import AuthProvider from "@/provider/AuthProvider";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 export const metadata: Metadata = {
@@ -15,25 +14,22 @@ export const metadata: Metadata = {
   description: "Ecommerce Admin Dashboard",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <AuthProvider>
-      <ProtectedRoute>
-      <AppProvider>
+    <ProtectedRoute>
+        <AppProvider>
         <Header />
         <div className="flex">
           <Sidebar />
-
           <div className="w-full mt-[60px] bg-[#EDEEF1]">{children}</div>
         </div>
-
         {/* <Toaster /> */}
       </AppProvider>
       </ProtectedRoute>
-    </AuthProvider>
+    
   );
 }
