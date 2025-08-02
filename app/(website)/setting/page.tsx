@@ -16,6 +16,10 @@ export default function SettingPage() {
       title: "Change Password",
       onClick: () => router.push("/setting/change-password"),
     },
+     {
+      title: "Terms & Conditions",
+      onClick: () => router.push("/setting/tmc"),
+    },
   ]
 
   return (
