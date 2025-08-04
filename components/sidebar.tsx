@@ -144,9 +144,9 @@ const navigation = [
 
 const customizeSubItems = [
   { name: "Hero Section", href: "/hero" },
-  { name: "Navbar", href: "/customize/navbar" },
-  { name: "Images", href: "/customize/images" },
-  { name: "Footer", href: "/customize/footer" },
+  { name: "About", href: "/about" },
+  { name: "Privacy Policy", href: "/pvc" },
+  { name: "Terms & Conditions", href: "/tmc" },
 ];
 
 export function Sidebar() {
