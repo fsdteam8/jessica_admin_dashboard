@@ -36,8 +36,6 @@ export const adminAuthOptions: NextAuthOptions = {
 
           const data = await res.json();
 
-          console.log(data)
-
           if (!res.ok || !data.data?.accessToken || !data?.data.user) {
             throw new Error(data?.message || "Invalid credentials");
           }

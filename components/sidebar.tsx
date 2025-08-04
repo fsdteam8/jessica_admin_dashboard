@@ -144,7 +144,7 @@ const navigation = [
 
 const customizeSubItems = [
   { name: "Hero Section", href: "/hero" },
-  { name: "Navbar", href: "/customize/navbar" },
+  { name: "About", href: "/about" },
   { name: "Images", href: "/customize/images" },
   { name: "Footer", href: "/customize/footer" },
 ];

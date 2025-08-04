@@ -10,7 +10,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Lawbie - Admin Dashboard",
   description: "Ecommerce Admin Dashboard",
-};
+  icons: {
+    icon: "/images/authImg.svg",
+}};
 
 export default function RootLayout({
   children,
