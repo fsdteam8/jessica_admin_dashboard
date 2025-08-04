@@ -126,7 +126,7 @@ const About = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl">
+      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-5xl">
         <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
           About Section
         </h2>
@@ -169,7 +169,7 @@ const About = () => {
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className="w-full p-3 border border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-500 file:text-white hover:file:bg-blue-600"
+              className="w-full p-3 border border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#23547B] file:text-white hover:file:bg-blue-600"
             />
             {imagePreview && (
               <div className="mt-4 w-full h-52 flex justify-center">
@@ -190,7 +190,7 @@ const About = () => {
             <button
               type="submit"
               disabled={mutation.isPending}
-              className="w-full p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-blue-300"
+              className="w-full p-3 bg-[#23547B] text-white rounded-lg hover:bg-blue-600 disabled:bg-blue-300"
             >
               {mutation.isPending
                 ? "Saving..."
