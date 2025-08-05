@@ -8,6 +8,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 const PrivacyPolicy = () => {
     const [title, setTitle] = useState("");
@@ -75,13 +76,13 @@ const PrivacyPolicy = () => {
 
             return response.data;
         },
-        onSuccess: () => {
+        onSuccess: (success) => {
             queryClient.invalidateQueries({ queryKey: ["privacy"] });
-            alert("Privacy Policy saved successfully!");
+            toast.success( success.message || "Privacy Policy saved successfully!");
         },
         onError: (error) => {
             console.error("Error saving data:", error);
-            alert("Failed to save Privacy Policy.");
+            toast.error(error.message || "Failed to save Privacy Policy.");
         },
     });
 

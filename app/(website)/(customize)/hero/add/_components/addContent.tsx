@@ -252,11 +252,11 @@ export default function AddPage() {
 
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
-            <Card className="w-full max-w-md">
+            <Card className="w-full max-w-2xl">
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl font-bold">Add New Hero</CardTitle>
                     <CardDescription>
-                        Enter the user&apos;s details and upload an image.
+                        Enter the hero&apos;s details and upload an image.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -265,16 +265,17 @@ export default function AddPage() {
                         <div className="flex justify-center">
                             <div
                                 onClick={handleImageClick}
-                                className="w-32 h-32 rounded-full border-2 border-gray-300 dark:border-gray-600 cursor-pointer overflow-hidden shadow hover:opacity-80 transition-all"
+                                className="w-full h-40 rounded-lg border-2 border-gray-300 dark:border-gray-600 cursor-pointer overflow-hidden shadow hover:opacity-80 transition-all"
                             >
                                 <Image
                                     src={imagePreview}
-                                    width={128}
-                                    height={128}
-                                    alt="User Image"
+                                    width={160}   // 40 x 4 = 160px
+                                    height={80}   // 20 x 4 = 80px
+                                    alt="Hero Image"
                                     className="object-cover w-full h-full"
                                 />
                             </div>
+
                             <input
                                 ref={fileInputRef}
                                 type="file"
