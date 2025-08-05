@@ -51,6 +51,7 @@ const Editcontent: React.FC<EditcontentProps> = ({ id }) => {
   const [text, setText] = useState("");
   const [country, setCountry] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [ispLoading, setIspLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>(
     "/placeholder.svg?height=128&width=128"
   );
@@ -97,6 +98,7 @@ const Editcontent: React.FC<EditcontentProps> = ({ id }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    setIspLoading(true);
     const token = session?.accessToken;
     if (!token) return;
 
@@ -126,6 +128,8 @@ const Editcontent: React.FC<EditcontentProps> = ({ id }) => {
     } catch (error) {
       console.error("Update failed:", error);
       toast.error("Failed to update hero content. Please try again.");
+    } finally {
+      setIspLoading(false);
     }
   };
 
@@ -174,16 +178,22 @@ const Editcontent: React.FC<EditcontentProps> = ({ id }) => {
             </div>
             <div className="space-y-2">
               <Label htmlFor="country">Country</Label>
-              <Input
+              <select
                 id="country"
-                placeholder="Enter Country"
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
                 required
-              />
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="" disabled>
+                  Select Country
+                </option>
+                <option value="usa">USA</option>
+                <option value="canada">Canada</option>
+              </select>
             </div>
             <Button type="submit" className="w-full">
-              Update Hero Content
+            {ispLoading ? "Updating..." : "Update Hero Content"}
             </Button>
           </form>
         </CardContent>
