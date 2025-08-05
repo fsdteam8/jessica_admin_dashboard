@@ -9,6 +9,7 @@ import "react-quill/dist/quill.snow.css";
 import Image from "next/image";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 const About = () => {
   const [title, setTitle] = useState("");
@@ -79,13 +80,13 @@ const About = () => {
 
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (success) => {
       queryClient.invalidateQueries({ queryKey: ["about"] });
-      alert("Data saved successfully!");
+      toast.success(success.message || "Data saved successfully!");
     },
     onError: (error) => {
       console.error("Error saving data:", error);
-      alert("Failed to save data. Please try again.");
+      toast.error(error.message ||  "Failed to save data. Please try again.");
     },
   });
 

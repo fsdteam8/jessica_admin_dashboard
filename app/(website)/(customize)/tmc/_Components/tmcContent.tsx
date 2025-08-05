@@ -8,6 +8,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 const TermsAndConditions = () => {
     const [title, setTitle] = useState("");
@@ -65,13 +66,13 @@ const TermsAndConditions = () => {
 
             return res.data;
         },
-        onSuccess: () => {
+        onSuccess: (success) => {
             queryClient.invalidateQueries({ queryKey: ["terms"] });
-            alert("Data saved successfully!");
+            toast.success(success.message || "Data saved successfully!");
         },
         onError: (error) => {
             console.error("Error saving data:", error);
-            alert("Failed to save data.");
+            toast.error(error.message || "Failed to save data.");
         },
     });
 

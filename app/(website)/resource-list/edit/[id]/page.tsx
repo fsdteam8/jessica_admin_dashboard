@@ -43,6 +43,7 @@ import "react-quill/dist/quill.snow.css";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { PageHeader } from "@/components/page-header";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Import React Quill dynamically to avoid SSR issues
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
@@ -57,6 +58,7 @@ interface PracticeArea {
   _id: string;
   name: string;
   description: string;
+  subPracticeAreas?: { _id: string; name: string }[]; // Add this property
 }
 
 interface ResourceType {
@@ -115,6 +117,9 @@ export default function EditPage() {
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [selectedSubAreas, setSelectedSubAreas] = useState<string[]>([]);
+  const [practiceArea, setPracticeArea] = useState("");
+
   const [existingThumbnail, setExistingThumbnail] = useState<string | null>(
     null
   );
@@ -235,6 +240,24 @@ export default function EditPage() {
       staleTime: 10 * 60 * 1000, // 10 minutes
     });
 
+  const singelPracticeArea = practiceAreasData?.find(
+    (p) => p.name.toLowerCase() === practiceArea.toLowerCase()
+  );
+
+  const handleCheckboxChange = (id: string, checked: boolean) => {
+    setSelectedSubAreas((prev) =>
+      checked ? [...prev, id] : prev.filter((item) => item !== id)
+    );
+  };
+
+  console.log(singelPracticeArea)
+  useEffect(() => {
+    if (singelPracticeArea) {
+      setPracticeArea(singelPracticeArea.name);
+    }
+  }, [singelPracticeArea]);
+
+
   const { data: resourceTypesData, isLoading: isLoadingResourceTypes } =
     useQuery<ResourceType[]>({
       queryKey: ["resourceTypes-all"],
@@ -294,6 +317,7 @@ export default function EditPage() {
         states: resourceData.states || [],
         description: resourceData.description || "",
         practiceArea: practiceArea?._id || "",
+
         resourceType: resourceType?._id || "",
         thumbnail: null,
         file: null,
@@ -324,6 +348,10 @@ export default function EditPage() {
       submitData.append("format", currentFormData.format);
       submitData.append("quantity", currentFormData.quantity);
       submitData.append("country", currentFormData.country);
+      selectedSubAreas.forEach((subAreaId) => {  
+        submitData.append("subPracticeAreas[]", subAreaId);
+      });
+      // submitData.append("subPracticeAreas", JSON.stringify(selectedSubAreas));
 
       currentFormData.states.forEach((state) => {
         submitData.append("states[]", state);
@@ -367,8 +395,7 @@ export default function EditPage() {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          `Failed to update resource: ${
-            errorData.message || response.statusText
+          `Failed to update resource: ${errorData.message || response.statusText
           }`
         );
       }
@@ -652,7 +679,7 @@ export default function EditPage() {
         <PageHeader
           // onButtonClick={handleAddResource}
           title="Resource List Edit"
-          // buttonText="Add Resource"
+        // buttonText="Add Resource"
         />
         <p className="text-gray-500 -mt-4">Dashboard &gt; Resource List</p>
       </div>
@@ -874,6 +901,7 @@ export default function EditPage() {
           {/* Right Sidebar */}
           <div className="space-y-6">
             {/* Practice Area & Resource Type */}
+
             <Card>
               <CardContent className="pt-6">
                 <div className="space-y-2">
@@ -882,9 +910,13 @@ export default function EditPage() {
                   </Label>
                   <Select
                     value={formData.practiceArea}
-                    onValueChange={(value) =>
-                      handleInputChange("practiceArea", value)
-                    }
+                    onValueChange={(value) => {
+                      handleInputChange("practiceArea", value);
+                      const selectedArea = practiceAreasData?.find(
+                        (area) => area._id === value
+                      );
+                      setPracticeArea(selectedArea ? selectedArea.name : value);
+                    }}
                   >
                     <SelectTrigger className="h-[49px] border border-gray-400">
                       <SelectValue placeholder="Select a practice area" />
@@ -904,6 +936,42 @@ export default function EditPage() {
                     </SelectContent>
                   </Select>
                 </div>
+
+
+                {/* {singelPracticeArea && singelPracticeArea.subPracticeAreas?.map((subArea) => (
+                  <div key={subArea._id} className="mt-2">
+                    <Label className="text-sm font-medium">
+                      {subArea.name}
+                    </Label>
+                  </div>
+                ))
+                } */}
+
+                <div>
+                  {singelPracticeArea?.subPracticeAreas?.map((subArea: { _id: string; name: string }) => (
+                    <div key={subArea._id} className="flex items-center space-x-2 mt-2">
+                      <Checkbox
+                        id={subArea.name}
+                        checked={selectedSubAreas.includes(subArea.name)}
+                        onCheckedChange={(checked: boolean | "indeterminate") =>
+                          handleCheckboxChange(subArea.name, Boolean(checked))
+                        }
+                      />
+                      <Label htmlFor={subArea.name} className="text-sm font-medium">
+                        {subArea.name}
+                      </Label>
+                    </div>
+                  ))}
+
+                  {/* Debug output or pass to form submission */}
+                  {/* <div className="mt-4 text-sm text-gray-500">
+                    Selected SubPracticeAreas:{" "}
+                    <pre>{JSON.stringify(selectedSubAreas, null, 2)}</pre>
+                  </div> */}
+                </div>
+
+
+
                 <div className="space-y-2 mt-4">
                   <Label className="text-base font-semibold">
                     Resource Type
@@ -1054,8 +1122,8 @@ export default function EditPage() {
                         {formData.file
                           ? formData.file.name
                           : existingFile
-                          ? "Click to replace file"
-                          : "Click to upload file"}
+                            ? "Click to replace file"
+                            : "Click to upload file"}
                       </p>
                     </label>
                   </div>
