@@ -1,48 +1,32 @@
 
-
 "use client";
 
 import React, { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
 import Image from "next/image";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
-const About = () => {
+const BestSellers = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [images, setImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [existingId, setExistingId] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
   const { data: session } = useSession();
   const token = session?.accessToken || "";
 
-  const modules = {
-    toolbar: [
-      [{ header: [1, 2, 3, false] }],
-      ["bold", "italic", "underline"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      [{ align: [] }],
-      ["link"],
-      [{ color: [] }, { background: [] }],
-      ["clean"],
-    ],
-  };
-
-  // Fetch existing About data
+  // Fetch BestSeller Data
   const { data: aboutResponse, isLoading } = useQuery({
     queryKey: ["about"],
     queryFn: async () => {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/admin/custom/about`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/admin/custom/bestseller`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       return response.data;
@@ -50,22 +34,32 @@ const About = () => {
     retry: false,
   });
 
-  const existingData = aboutResponse?.data;
+  const existingData = aboutResponse?.data?.[0] || null;
 
-  // Populate state with fetched data
   useEffect(() => {
     if (existingData) {
       setTitle(existingData.title || "");
       setDescription(existingData.description || "");
-      setImagePreview(existingData.image || null);
+      setImagePreviews(existingData.image || []);
+      setExistingId(existingData._id);
     }
   }, [existingData]);
 
-  // Mutation for create/update
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const fileArray = Array.from(files);
+      setImages(fileArray);
+
+      const previews = fileArray.map((file) => URL.createObjectURL(file));
+      setImagePreviews(previews);
+    }
+  };
+
   const mutation = useMutation({
     mutationFn: async (formData: FormData) => {
-      const isUpdate = !!existingData;
-      const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/admin/custom/about/${isUpdate ? existingData._id : ""}`;
+      const isUpdate = !!existingId;
+      const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/admin/custom/bestseller/${isUpdate ? existingId : ""}`;
       const method = isUpdate ? "PUT" : "POST";
 
       const response = await axios({
@@ -83,65 +77,44 @@ const About = () => {
     onSuccess: (success) => {
       queryClient.invalidateQueries({ queryKey: ["about"] });
       toast.success(success.message || "Data saved successfully!");
+      setImages([]);
     },
     onError: (error) => {
       console.error("Error saving data:", error);
-      toast.error(error.message ||  "Failed to save data. Please try again.");
+      toast.error(error.message || "Failed to save data. Please try again.");
     },
   });
-
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
-  };
-
-  const handleDescriptionChange = (value: string) => {
-    setDescription(value);
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
-    if (image) {
-      formData.append("image", image);
-    }
+
+    images.forEach((file) => {
+      formData.append("image", file); // match backend key
+    });
+
     mutation.mutate(formData);
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-5xl">
+      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl">
         <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-          About Section
+          Best Sellers Section
         </h2>
 
         <form onSubmit={handleSubmit}>
-          {/* Title Input */}
+          {/* Title */}
           <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-2">
-              Title
-            </label>
+            <label className="block text-gray-700 font-semibold mb-2">Title</label>
             <input
               type="text"
               value={title}
-              onChange={handleTitleChange}
+              onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter title"
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -149,39 +122,40 @@ const About = () => {
 
           {/* Description */}
           <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-2">
-              Description
-            </label>
-            <ReactQuill
+            <label className="block text-gray-700 font-semibold mb-2">Description</label>
+            <textarea
               value={description}
-              onChange={handleDescriptionChange}
-              modules={modules}
-              className="bg-white rounded-lg"
-              placeholder="Write your description here..."
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Enter description"
+              rows={5}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          {/* Image Upload */}
+          {/* Images */}
           <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-2">
-              Image
-            </label>
+            <label className="block text-gray-700 font-semibold mb-2">Images</label>
             <input
               type="file"
               accept="image/*"
               onChange={handleImageChange}
+              multiple
               className="w-full p-3 border border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#23547B] file:text-white hover:file:bg-blue-600"
             />
-            {imagePreview && (
-              <div className="mt-4 w-full h-52 flex justify-center">
-                <Image
-                  src={imagePreview}
-                  alt="Image Preview"
-                  width={500}
-                  height={200}
-                  unoptimized
-                  className="object-cover rounded-lg shadow-md"
-                />
+
+            {imagePreviews.length > 0 && (
+              <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4">
+                {imagePreviews.map((preview, index) => (
+                  <div key={index} className="w-full h-52 relative">
+                    <Image
+                      src={preview}
+                      alt={`Image Preview ${index + 1}`}
+                      fill
+                      unoptimized
+                      className="object-cover rounded-lg shadow-md"
+                    />
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -195,9 +169,9 @@ const About = () => {
             >
               {mutation.isPending
                 ? "Saving..."
-                : existingData
-                ? "Update"
-                : "Create"}
+                : existingId
+                  ? "Update"
+                  : "Create"}
             </button>
           </div>
         </form>
@@ -206,4 +180,4 @@ const About = () => {
   );
 };
 
-export default About;
+export default BestSellers;
