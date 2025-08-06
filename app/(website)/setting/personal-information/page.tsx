@@ -329,9 +329,9 @@ export default function ProfilePage() {
 
   // Handle image delete
   const handleImageDelete = () => {
-    if (window.confirm("Are you sure you want to delete your profile image?")) {
+    
       deleteImageMutation.mutate()
-    }
+    
   }
 
   // Handle image load start
