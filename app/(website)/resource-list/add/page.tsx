@@ -69,6 +69,7 @@ interface FormDataState {
   title: string;
   price: string;
   discountPrice: string;
+  productStatus: string;
   quantity: string;
   format: string;
   country: string;
@@ -102,6 +103,7 @@ export default function ResourceForm() {
     quantity: "",
     format: "",
     country: "",
+    productStatus: "",
     states: [],
     description: "",
     practiceArea: "",
@@ -214,6 +216,7 @@ export default function ResourceForm() {
 
   const { mutate: submitResource, isPending: isSubmitting } = useMutation({
     mutationFn: async (currentFormData: FormDataState) => {
+      console.log("Submitting resource with data:", currentFormData);
       const submitData = new FormData();
       submitData.append("title", currentFormData.title);
       submitData.append("description", currentFormData.description);
@@ -222,7 +225,7 @@ export default function ResourceForm() {
       submitData.append("format", currentFormData.format);
       submitData.append("quantity", currentFormData.quantity);
       submitData.append("country", currentFormData.country);
-
+      submitData.append("productStatus", currentFormData.productStatus);
       currentFormData.states.forEach((state) => {
         submitData.append("states[]", state);
       });
@@ -439,7 +442,55 @@ export default function ResourceForm() {
     }));
   };
 
-  const handleSubmit = () => {
+  // const handleSubmit = (action: "publish" | "draft") => {
+
+  //   const practiceAreaObj = practiceAreasData?.find(
+  //     (p) => p._id === formData.practiceArea
+  //   );
+  //   const resourceTypeObj = resourceTypesData?.find(
+  //     (rt) => rt._id === formData.resourceType
+  //   );
+
+
+  //   const dataToLog = {
+  //     title: formData.title,
+  //     description: formData.description,
+  //     price: formData.price,
+  //     discountPrice: formData.discountPrice,
+  //     format: formData.format,
+  //     quantity: formData.quantity,
+  //     country: formData.country,
+  //     states: formData.states,
+  //     subPracticeAreas: selectedSubAreas,
+  //     practiceAreas: practiceAreaObj
+  //       ? [practiceAreaObj.name]
+  //       : formData.practiceArea
+  //         ? [formData.practiceArea]
+  //         : [],
+  //     resourceType: resourceTypeObj
+  //       ? [resourceTypeObj.resourceTypeName]
+  //       : formData.resourceType
+  //         ? [formData.resourceType]
+  //         : [],
+  //     thumbnail: formData.thumbnail
+  //       ? `https://res.cloudinary.com/dyxwchbmh/image/upload/v_placeholder/resources/thumbnails/thumb_${formData.thumbnail.name}`
+  //       : null,
+  //     file: formData.file
+  //       ? {
+  //         url: `https://res.cloudinary.com/dyxwchbmh/image/upload/v_placeholder/resources/files/doc_${formData.file.name}`,
+  //         type: formData.file.type,
+  //       }
+  //       : null,
+  //     images: formData.images.map(
+  //       (img) =>
+  //         `https://res.cloudinary.com/dyxwchbmh/image/upload/v_placeholder/resources/images/img_${img.name}`
+  //     ),
+  //   };
+  //   console.log("Form Data (for logging):", dataToLog);
+  //   submitResource(formData);
+  // };
+ 
+  const handleSubmit = (action: "publish" | "draft") => {
     const practiceAreaObj = practiceAreasData?.find(
       (p) => p._id === formData.practiceArea
     );
@@ -447,16 +498,23 @@ export default function ResourceForm() {
       (rt) => rt._id === formData.resourceType
     );
 
+    // Clone formData and add productStatus
+    const formDataToSubmit: FormDataState = {
+      ...formData,
+      productStatus: action === "publish" ? "approved" : "draft", // ✅ This line adds productStatus
+    };
+
     const dataToLog = {
-      title: formData.title,
-      description: formData.description,
-      price: formData.price,
-      discountPrice: formData.discountPrice,
-      format: formData.format,
-      quantity: formData.quantity,
-      country: formData.country,
-      states: formData.states,
+      title: formDataToSubmit.title,
+      description: formDataToSubmit.description,
+      price: formDataToSubmit.price,
+      discountPrice: formDataToSubmit.discountPrice,
+      format: formDataToSubmit.format,
+      quantity: formDataToSubmit.quantity,
+      country: formDataToSubmit.country,
+      states: formDataToSubmit.states,
       subPracticeAreas: selectedSubAreas,
+      productStatus: formDataToSubmit.productStatus, // ✅ For logging
       practiceAreas: practiceAreaObj
         ? [practiceAreaObj.name]
         : formData.practiceArea
@@ -481,8 +539,11 @@ export default function ResourceForm() {
           `https://res.cloudinary.com/dyxwchbmh/image/upload/v_placeholder/resources/images/img_${img.name}`
       ),
     };
+
     console.log("Form Data (for logging):", dataToLog);
-    submitResource(formData);
+
+    // ✅ Pass the updated formData with productStatus
+    submitResource(formDataToSubmit);
   };
 
   const filteredStates =
@@ -984,15 +1045,26 @@ export default function ResourceForm() {
                 </div>
               </CardContent>
             </Card>
+            <div className="flex gap-4 items-center justify-center">
+              <Button
+                onClick={() => handleSubmit("publish")}
+                className="w-full"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Publishing..." : "Publish Resources"}
+              </Button>
 
-            {/* Submit Button */}
-            <Button
-              onClick={handleSubmit}
-              className="w-full"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Publishing..." : "Publish Resources"}
-            </Button>
+              <Button
+                onClick={() => handleSubmit("draft")}
+                className="w-full"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Drafting..." : " Draft"}
+              </Button>
+            </div>
+
+
+
           </div>
         </div>
       </div>
