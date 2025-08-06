@@ -10,13 +10,14 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
-import {  PuffLoader } from "react-spinners";
+import { PuffLoader } from "react-spinners";
 
 interface PracticeArea {
   _id: string;
   name: string;
   description: string;
   createdAt: string;
+  subPracticeAreas: Array<{ name: string; _id?: string }>; // Updated to reflect actual structure
 }
 
 declare module "next-auth" {
@@ -59,6 +60,31 @@ const columns: Column[] = [
   {
     key: "description",
     label: "Description",
+  },
+  {
+    key: "subPracticeAreas", // Fixed: Use correct key
+    label: "Sub Practice Areas",
+    render: (value) => {
+      const subPracticeAreas = value as Array<{ name: string }>;
+      
+      if (!Array.isArray(subPracticeAreas) || subPracticeAreas.length === 0) {
+        return <span className="text-gray-400">No sub practice areas</span>;
+      }
+
+      return (
+        <div className="flex flex-wrap gap-1">
+          {subPracticeAreas.map((item, index) => (
+            <Badge 
+              key={index} 
+              variant="outline" 
+              className="text-xs bg-blue-50 text-blue-700 border-blue-200"
+            >
+              {item.name}
+            </Badge>
+          ))}
+        </div>
+      );
+    },
   },
 ];
 
