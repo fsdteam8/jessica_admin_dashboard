@@ -208,10 +208,10 @@ export default function TablePage() {
         if (!Array.isArray(result.data)) {
             throw new Error("Invalid data format: data is not an array");
         }
- 
+
         return result.data;
     };
-    
+
 
     const { data, isLoading, isError, refetch } = useQuery({
         queryKey: ["heroes"],
@@ -247,7 +247,7 @@ export default function TablePage() {
                     <h2 className="text-2xl font-semibold text-gray-800">Hero List</h2>
                     <Button
                         onClick={() => router.push("/hero/add")}
-                        className="bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+                        className="bg-[#23547B] hover:bg-blue-700 text-white transition-colors"
                     >
                         <Plus className="w-5 h-5 mr-2" />
                         Add New Hero
@@ -282,7 +282,7 @@ export default function TablePage() {
                                                     src={item.image}
                                                     alt={item.name}
                                                     fill
-                                                    className="rounded-full object-cover border border-gray-200"
+                                                    className="rounded-lg object-cover border border-gray-200"
                                                 />
                                             </div>
                                         </td>
@@ -295,7 +295,7 @@ export default function TablePage() {
                                                     size="sm"
                                                     onClick={() => router.push(`/hero/edit/${item._id}`)}
                                                     disabled={deletingId === item._id}
-                                                    className="text-blue-600 border-blue-600 flex hover:bg-blue-50"
+                                                    className="text-[#23547B] border-[#23547B] flex hover:bg-blue-50"
                                                 >
                                                     <Pencil className="w-4 h-4 mr-2" />
                                                     Edit

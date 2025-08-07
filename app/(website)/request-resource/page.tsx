@@ -112,16 +112,18 @@ const fetchResources = async (): Promise<ResourceRequest[]> => {
     throw new Error(data.message || "Failed to fetch resources");
   }
 
+  console.log(data)
+
   const pendingResources = data.data
     .filter((resource: ApiResourceRequest) => resource.status === "pending")
     .map((resource: ApiResourceRequest) => ({
       id: resource.productId,
-      name: resource.title,
+      name: resource.title, 
       seller: {
-        name: `${resource.createdBy.firstName} ${resource.createdBy.lastName}`,
-        avatar:
-          resource.createdBy.profileImage ||
-          "/placeholder.svg?height=32&width=32",
+        // name: `${resource.createdBy.firstName} ${resource.createdBy.lastName}`,
+        // avatar:
+        //   resource.createdBy.profileImage ||
+        //   "/placeholder.svg?height=32&width=32",
       },
       price: `$${resource.price}`,
       discountPrice: `$${resource.discountPrice}`,
@@ -232,7 +234,7 @@ export default function RequestResourcePage() {
           context.previousRequests
         );
       }
-      toast.error("Error", {
+      toast.success("success", {
         description:
           err instanceof Error
             ? err.message

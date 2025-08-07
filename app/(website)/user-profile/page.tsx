@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DataTable } from "@/components/data-table";
-import { Card, CardContent } from "@/components/ui/card";
 import { useSession } from "next-auth/react";
 import { PuffLoader } from "react-spinners";
 
@@ -102,20 +101,20 @@ const columns = [
   { key: "deliveredOrder", label: "Delivered Order" },
   { key: "pendingOrder", label: "Pending Order" },
   { key: "cancelOrder", label: "Cancel Order" },
-  {
-    key: "action",
-    label: "Action",
-    render: (_: unknown, row: DisplayUser) => (
-      <Button
-        variant="outline"
-        size="sm"
-        className="bg-slate-600 text-white hover:bg-slate-700"
-        onClick={() => console.log("View details for user:", row.id)}
-      >
-        Details
-      </Button>
-    ),
-  },
+  // {
+  //   key: "action",
+  //   label: "Action",
+  //   render: (_: unknown, row: DisplayUser) => (
+  //     <Button
+  //       variant="outline"
+  //       size="sm"
+  //       className="bg-slate-600 text-white hover:bg-slate-700"
+  //       onClick={() => console.log("View details for user:", row.id)}
+  //     >
+  //       Details
+  //     </Button>
+  //   ),
+  // },
 ];
 
 export default function UserProfilePage() {
@@ -141,10 +140,10 @@ export default function UserProfilePage() {
   const totalItems = apiResponse?.pagination?.totalItems || displayUsers.length;
   const itemsPerPage = apiResponse?.pagination?.itemsPerPage || 10;
 
-  const totalSales = displayUsers.reduce(
-    (sum, user) => sum + user.totalOrder * 65.5,
-    0
-  );
+  // const totalSales = displayUsers.reduce(
+  //   (sum, user) => sum + user.totalOrder * 65.5,
+  //   0
+  // );
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -197,7 +196,7 @@ export default function UserProfilePage() {
                 <p className="text-gray-500">Dashboard User Profile</p>
               </div>
             </div>
-            <Card className="bg-[#525773] text-white w-[259px] rounded-[8px]">
+            {/* <Card className="bg-[#525773] text-white w-[259px] rounded-[8px]">
               <CardContent className="p-4">
                 <div className="space-y-3">
                   <p className="text-base opacity-90 ml-2">Total Sales</p>
@@ -212,7 +211,7 @@ export default function UserProfilePage() {
                   </div>
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
 
           <div className="mb-4 flex items-center justify-between">

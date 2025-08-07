@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { DataTable } from "@/components/data-table";
-import { Download, Loader2 } from "lucide-react";
+import {  Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { PuffLoader } from "react-spinners";
 
@@ -161,10 +161,10 @@ export default function MySalesPage() {
                 <p className="text-gray-500">Dashboard &gt; wallet</p>
               </div>
             </div>
-            <Button className="bg-[#525773] hover:bg-[#272e52]">
+            {/* <Button className="bg-[#525773] hover:bg-[#272e52]">
               <Download className="h-4 w-4 mr-2" />
               Withdraw
-            </Button>
+            </Button> */}
           </div>
 
           {/* Total Sales Card */}

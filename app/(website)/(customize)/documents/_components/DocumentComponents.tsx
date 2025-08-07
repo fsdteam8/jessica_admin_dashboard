@@ -525,7 +525,7 @@ const AddDocument = () => {
                             type="file"
                             accept="image/*"
                             onChange={handleImageChange}
-                            className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#23547B] file:text-white hover:file:bg-blue-600"
+                            className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#23547B] file:text-white hover:file:bg-[#23547B]"
                             required
                         />
                         {imagePreview && (
@@ -544,7 +544,7 @@ const AddDocument = () => {
                     {/* Submit Button */}
                     <Button
                         type="submit"
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-md transition"
+                        className="w-full bg-[#23547B] hover:bg-[#2f74ad] text-white font-semibold py-3 rounded-lg shadow-md transition"
                         disabled={mutation.isPending}
                     >
                         {mutation.isPending ? "Saving..." : "Add Document"}
