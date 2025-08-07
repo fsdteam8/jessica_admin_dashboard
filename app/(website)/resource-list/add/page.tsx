@@ -489,7 +489,7 @@ export default function ResourceForm() {
   //   console.log("Form Data (for logging):", dataToLog);
   //   submitResource(formData);
   // };
- 
+
   const handleSubmit = (action: "publish" | "draft") => {
     const practiceAreaObj = practiceAreasData?.find(
       (p) => p._id === formData.practiceArea
@@ -514,7 +514,7 @@ export default function ResourceForm() {
       country: formDataToSubmit.country,
       states: formDataToSubmit.states,
       subPracticeAreas: selectedSubAreas,
-      productStatus: formDataToSubmit.productStatus, // ✅ For logging
+      productStatus: formDataToSubmit.productStatus, 
       practiceAreas: practiceAreaObj
         ? [practiceAreaObj.name]
         : formData.practiceArea
@@ -1062,9 +1062,6 @@ export default function ResourceForm() {
                 {isSubmitting ? "Drafting..." : " Draft"}
               </Button>
             </div>
-
-
-
           </div>
         </div>
       </div>

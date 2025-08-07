@@ -140,7 +140,7 @@ const BestSellers = () => {
               accept="image/*"
               onChange={handleImageChange}
               multiple
-              className="w-full p-3 border border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#23547B] file:text-white hover:file:bg-blue-600"
+              className="w-full p-3 border border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#23547B] file:text-white hover:file:bg-#23547B"
             />
 
             {imagePreviews.length > 0 && (
@@ -165,7 +165,7 @@ const BestSellers = () => {
             <button
               type="submit"
               disabled={mutation.isPending}
-              className="w-full p-3 bg-[#23547B] text-white rounded-lg hover:bg-blue-600 disabled:bg-blue-300"
+              className="w-full p-3 bg-[#23547B] text-white rounded-lg hover:bg-[#2b6fa7] disabled:bg-blue-300"
             >
               {mutation.isPending
                 ? "Saving..."

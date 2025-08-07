@@ -254,23 +254,23 @@ export function DataTable<
                         {["/request-resource", "/resource-list"].includes(
                           pathname
                         ) && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => {
-                              setIsChatOpen(true);
-                              setSelectedResourceId(row.originalId);
-                              console.log(
-                                "Selected Resource ID:",
-                                row.originalId
-                              );
-                            }}
-                            className="text-[#424242] hover:text-green-600"
-                            title="Message"
-                          >
-                            <MessageCircle className="w-4 h-4" />
-                          </Button>
-                        )}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                setIsChatOpen(true);
+                                setSelectedResourceId(row.originalId);
+                                console.log(
+                                  "Selected Resource ID:",
+                                  row.originalId
+                                );
+                              }}
+                              className="text-[#424242] hover:text-green-600"
+                              title="Message"
+                            >
+                              <MessageCircle className="w-4 h-4" />
+                            </Button>
+                          )}
                       </div>
                     </TableCell>
                   )}
@@ -299,9 +299,8 @@ export function DataTable<
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
         title="Delete Item"
-        description={`Are you sure you want to delete ${
-          deleteItem ? getItemName(deleteItem) : "this item"
-        }? This action cannot be undone.`}
+        description={`Are you sure you want to delete ${deleteItem ? getItemName(deleteItem) : "this item"
+          }? This action cannot be undone.`}
         isLoading={isDeleting}
       />
 
