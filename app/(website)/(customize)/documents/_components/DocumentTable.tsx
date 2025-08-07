@@ -80,7 +80,7 @@ const DocumentTable = () => {
                 <h1 className="text-3xl font-semibold text-gray-800">Documents</h1>
                 <Button
                     onClick={() => router.push("/documents/add")}
-                    className="bg-blue-600 hover:bg-blue-700 text-white shadow-md transition"
+                    className="bg-[#23547B] hover:bg-[#29679b] text-white shadow-md transition"
 
                 >
                     + Add Document

@@ -80,6 +80,7 @@ interface ResourceData {
   format: string;
   thumbnail: string;
   images: string[];
+  productStatus: string;
   practiceAreas: string[];
   file: {
     url: string;
@@ -97,6 +98,7 @@ interface FormDataState {
   states: string[];
   description: string;
   practiceArea: string;
+  productStatus: string
   resourceType: string;
   thumbnail: File | null;
   file: File | null;
@@ -136,6 +138,7 @@ export default function EditPage() {
     discountPrice: "",
     quantity: "",
     format: "",
+    productStatus: "",
     country: "",
     states: [],
     description: "",
@@ -250,7 +253,7 @@ export default function EditPage() {
     );
   };
 
-  console.log(singelPracticeArea)
+
   useEffect(() => {
     if (singelPracticeArea) {
       setPracticeArea(singelPracticeArea.name);
@@ -317,7 +320,7 @@ export default function EditPage() {
         states: resourceData.states || [],
         description: resourceData.description || "",
         practiceArea: practiceArea?._id || "",
-
+        productStatus: "",
         resourceType: resourceType?._id || "",
         thumbnail: null,
         file: null,
@@ -340,6 +343,7 @@ export default function EditPage() {
 
   const { mutate: updateResource, isPending: isSubmitting } = useMutation({
     mutationFn: async (currentFormData: FormDataState) => {
+      console.log("Submitting resource with data:", currentFormData);
       const submitData = new FormData();
       submitData.append("title", currentFormData.title);
       submitData.append("description", currentFormData.description);
@@ -348,7 +352,8 @@ export default function EditPage() {
       submitData.append("format", currentFormData.format);
       submitData.append("quantity", currentFormData.quantity);
       submitData.append("country", currentFormData.country);
-      selectedSubAreas.forEach((subAreaId) => {  
+      submitData.append("productStatus", currentFormData.productStatus);
+      selectedSubAreas.forEach((subAreaId) => {
         submitData.append("subPracticeAreas[]", subAreaId);
       });
       // submitData.append("subPracticeAreas", JSON.stringify(selectedSubAreas));
@@ -621,8 +626,16 @@ export default function EditPage() {
     );
   }, []);
 
-  const handleSubmit = useCallback(() => {
-    updateResource(formData);
+  const handleSubmit = useCallback((action: "publish" | "draft") => {
+
+
+    const formDataToSubmit: FormDataState = {
+      ...formData,
+      productStatus: action === "publish" ? "approved" : "draft",
+    };
+
+
+    updateResource(formDataToSubmit);
   }, [updateResource, formData]);
 
   // Memoize filtered states to prevent unnecessary recalculations
@@ -1233,20 +1246,23 @@ export default function EditPage() {
             </Card>
 
             {/* Submit Button */}
-            <Button
-              onClick={handleSubmit}
-              className="w-full"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Updating...
-                </>
-              ) : (
-                "Update Resource"
-              )}
-            </Button>
+            <div className="flex gap-4 items-center justify-center">
+              <Button
+                onClick={() => handleSubmit("publish")}
+                className="w-full"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Publishing..." : "Publish Resources"}
+              </Button>
+
+              <Button
+                onClick={() => handleSubmit("draft")}
+                className="w-full"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Drafting..." : " Draft"}
+              </Button>
+            </div>
           </div>
         </div>
       </div>

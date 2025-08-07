@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import QuillEditor from "@/components/ui/quill-editor";
+import { useSession } from "next-auth/react";
 // import { useSession } from "next-auth/react";
 
 const FormSchema = z.object({
@@ -25,12 +26,9 @@ const FormSchema = z.object({
 });
 
 const NewsLetterForm = () => {
-  //   const session = useSession();
-  //   const token = (session?.data?.user as { token: string })?.token || "";
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODNlZDVlYTY0ODUxNzk2MWZlYmQ2OGQiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NTAxNDQ0ODEsImV4cCI6MTc1MDc0OTI4MX0.53v3kiN47F5nLKQgdJjMmIz_gfSfULxf6NIR94RZft8";
-  console.log(token);
-
+    const session = useSession();
+    const token = session?.data?.accessToken || "";
+  
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
