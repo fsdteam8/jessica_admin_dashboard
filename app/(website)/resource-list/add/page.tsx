@@ -95,6 +95,8 @@ export default function ResourceForm() {
   const [practiceArea, setPracticeArea] = useState("");
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
   const [selectedSubAreas, setSelectedSubAreas] = useState<string[]>([]);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [isDrafting, setIsDrafting] = useState(false);
 
   const [formData, setFormData] = useState<FormDataState>({
     title: "",
@@ -214,9 +216,12 @@ export default function ResourceForm() {
       },
     });
 
-  const { mutate: submitResource, isPending: isSubmitting } = useMutation({
+  const { mutate: submitResource, } = useMutation({
     mutationFn: async (currentFormData: FormDataState) => {
-      console.log("Submitting resource with data:", currentFormData);
+
+      if (currentFormData.productStatus === "approved") setIsPublishing(true);
+      if (currentFormData.productStatus === "draft") setIsDrafting(true);
+
       const submitData = new FormData();
       submitData.append("title", currentFormData.title);
       submitData.append("description", currentFormData.description);
@@ -514,7 +519,7 @@ export default function ResourceForm() {
       country: formDataToSubmit.country,
       states: formDataToSubmit.states,
       subPracticeAreas: selectedSubAreas,
-      productStatus: formDataToSubmit.productStatus, 
+      productStatus: formDataToSubmit.productStatus,
       practiceAreas: practiceAreaObj
         ? [practiceAreaObj.name]
         : formData.practiceArea
@@ -1049,17 +1054,17 @@ export default function ResourceForm() {
               <Button
                 onClick={() => handleSubmit("publish")}
                 className="w-full"
-                disabled={isSubmitting}
+                disabled={isPublishing}
               >
-                {isSubmitting ? "Publishing..." : "Publish Resources"}
+                {isPublishing ? "Publishing..." : "Publish Resources"}
               </Button>
 
               <Button
                 onClick={() => handleSubmit("draft")}
                 className="w-full"
-                disabled={isSubmitting}
+                disabled={isDrafting}
               >
-                {isSubmitting ? "Drafting..." : " Draft"}
+                {isDrafting ? "Drafting..." : " Draft"}
               </Button>
             </div>
           </div>
