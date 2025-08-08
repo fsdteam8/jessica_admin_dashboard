@@ -205,7 +205,7 @@ export default function EditPracticeAreaPage() {
                 </div>
 
                 <div className="space-y-3">
-                  {formData.subPracticeAreas.map((subCategory:any, index) => (
+                  {formData.subPracticeAreas.map((subCategory, index) => (
                     <div key={index} className="flex items-center gap-2">
                       <Input
                         placeholder="Type sub category name here..."
