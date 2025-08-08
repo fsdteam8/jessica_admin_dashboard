@@ -1,14 +1,15 @@
-"use client"
-
-import { useEffect, useState } from "react"
-import { useRouter, useParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { toast } from "sonner"
-import { useSession } from "next-auth/react"
-import { PuffLoader } from "react-spinners"
+"use client";
+import type React from "react";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Save, Plus, X } from "lucide-react";
+import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 declare module "next-auth" {
   interface Session {
@@ -16,140 +17,167 @@ declare module "next-auth" {
   }
 }
 
-export default function EditCategoryPage() {
-  const router = useRouter()
-  const params = useParams()
-  const categoryId = params.id as string
+interface PracticeAreaData {
+  _id: string;
+  name: string;
+  description: string;
+  subPracticeAreas: { _id: string; name: string; category: string; createdAt: string; updatedAt: string; __v: number }[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
 
+export default function EditPracticeAreaPage() {
+  const router = useRouter();
+  const { id } = useParams(); // Get practice area ID from URL
   const session = useSession();
-  console.log("session", session);
-
   const TOKEN = session?.data?.accessToken;
 
+  // Fetch practice area data
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["practiceArea", id],
+    queryFn: async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/practice-area/${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${TOKEN}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to fetch practice area");
+      }
+      return response.json();
+    },
+    enabled: !!id && !!TOKEN, // Only fetch if id and token are available
+  });
+
+  // Initialize form data
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-  })
-  const [isLoading, setIsLoading] = useState(false)
-  const [isLoadingData, setIsLoadingData] = useState(true)
+    subPracticeAreas: [""], // Initialize with one empty subcategory
+  });
 
+  // Populate form data with fetched data
   useEffect(() => {
-    const fetchCategory = async () => {
-      setIsLoadingData(true)
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/practice-area/${categoryId}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        )
-        if (!res.ok) throw new Error("Category not found")
-        const json = await res.json()
-        setFormData({
-          name: json.data.name,
-          description: json.data.description,
-        })
-      } catch (error) {
-        if (error instanceof Error) {
-          toast.error(error.message)
-        } else {
-          toast.error("Failed to load category")
-        }
-        router.push("/practice-area")
-      } finally {
-        setIsLoadingData(false)
-      }
+    if (data?.data) {
+      const practiceArea: PracticeAreaData = data.data;
+      setFormData({
+        name: practiceArea.name || "",
+        description: practiceArea.description || "",
+        subPracticeAreas: practiceArea.subPracticeAreas?.length
+          ? practiceArea.subPracticeAreas.map((sub) => sub.name)
+          : [""], // Map to names, ensure at least one empty input
+      });
     }
+  }, [data]);
 
-    if (categoryId) {
-      fetchCategory()
-    }
-  }, [categoryId, router])
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!formData.name.trim()) {
-      toast.error("Category name is required")
-      return
-    }
-
-    setIsLoading(true)
-
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/practice-area/${categoryId}`,
+  const mutation = useMutation({
+    mutationFn: async (data: typeof formData) => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/practice-area/${id}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${TOKEN}`,
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(data),
         }
-      )
+      );
 
-      if (!res.ok) throw new Error("Failed to update category")
-
-      toast.success("Category updated successfully")
-
-      setTimeout(() => {
-        router.push("/practice-area")
-      }, 2000)
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message)
-      } else {
-        toast.error("Failed to update category")
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update practice area");
       }
-    } finally {
-      setIsLoading(false)
+
+      return response.json();
+    },
+    onSuccess: (success) => {
+      toast.success(success.message || "Practice area updated successfully");
+      router.push("/practice-area");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleSubCategoryChange = (index: number, value: string) => {
+    const updatedSubCategories = [...formData.subPracticeAreas];
+    updatedSubCategories[index] = value;
+    setFormData({ ...formData, subPracticeAreas: updatedSubCategories });
+  };
+
+  const addSubCategory = () => {
+    setFormData({
+      ...formData,
+      subPracticeAreas: [...formData.subPracticeAreas, ""],
+    });
+  };
+
+  const removeSubCategory = (index: number) => {
+    if (formData.subPracticeAreas.length > 1) {
+      const updatedSubCategories = formData.subPracticeAreas.filter(
+        (_, i) => i !== index
+      );
+      setFormData({ ...formData, subPracticeAreas: updatedSubCategories });
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.name.trim()) {
+      toast.error("Practice-area name is required");
+      return;
+    }
+
+    // Filter out empty subcategories before submitting
+    const filteredData = {
+      ...formData,
+      subPracticeAreas: formData.subPracticeAreas.filter(
+        (sub) => sub.trim() !== ""
+      ),
+    };
+
+    // Log form data
+    console.log("Form Data Submitted:", filteredData);
+
+    mutation.mutate(filteredData);
+  };
+
+  if (isLoading) {
+    return <div className="p-6 bg-[#EDEEF1]">Loading...</div>;
   }
 
-  const handleCancel = () => {
-    router.push("/practice-area")
-  }
-
-  if (isLoadingData) {
+  if (error) {
     return (
-      <div className="flex h-[60vh] items-center justify-center bg-gray-50">
-              <div className="text-center">
-                {/* Optional: Remove this if you only want MoonLoader */}
-                {/* <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-600 mx-auto mb-4"></div> */}
-                <PuffLoader
-                  color="rgba(49, 23, 215, 1)"
-                  cssOverride={{}}
-                  loading
-                  speedMultiplier={1}
-                />
-              </div>
-            </div>
-    )
+      <div className="p-6 bg-[#EDEEF1]">
+        <p className="text-red-500">Error: {error.message}</p>
+      </div>
+    );
   }
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-[#EDEEF1] p-6">
       <div className="flex-1 overflow-auto">
-        <div className="p-6">
+        <div>
           <div className="mb-6">
             <h1 className="text-2xl font-semibold text-gray-900">
-              Edit Practice Areas
+              Edit Practice-area
             </h1>
-            <p className="text-gray-500">
-              Dashboard &gt; Practice Areas &gt; Edit Practice Areas
-            </p>
+            <p className="text-gray-500">Dashboard &gt; Practice-area</p>
           </div>
 
-          <div className="rounded-lg">
-            <h2 className="text-lg font-semibold mb-6">General Information</h2>
-
+          <div className="pt-10">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <Label htmlFor="name">Practice Area Name</Label>
+                <Label htmlFor="name">Practice-area Name</Label>
                 <Input
                   id="name"
                   placeholder="Type category name here..."
@@ -157,8 +185,50 @@ export default function EditCategoryPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className="mt-3 h-[49px] border border-[#707070]"
+                  className="mt-3 h-[50px] border border-[#707070]"
                 />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <Label>Sub Categories</Label>
+                  <Button
+                    type="button"
+                    onClick={addSubCategory}
+                    variant="outline"
+                    size="sm"
+                    className="border border-[#707070]"
+                  >
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add Sub Category
+                  </Button>
+                </div>
+
+                <div className="space-y-3">
+                  {formData.subPracticeAreas.map((subCategory:any, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <Input
+                        placeholder="Type sub category name here..."
+                        value={subCategory}
+                        onChange={(e) =>
+                          handleSubCategoryChange(index, e.target.value)
+                        }
+                        className="h-[50px] border border-[#707070]"
+                      />
+                      {formData.subPracticeAreas.length > 1 && (
+                        <Button
+                          type="button"
+                          onClick={() => removeSubCategory(index)}
+                          variant="outline"
+                          size="sm"
+                          className="px-2 border border-[#707070] text-red-500 hover:text-red-700"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div>
@@ -170,20 +240,20 @@ export default function EditCategoryPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
                   }
-                  className="mt-3 min-h-[150px] border border-[#707070]"
+                  className="mt-1 min-h-[120px] border border-[#707070]"
                 />
               </div>
 
-              <div className="flex justify-end space-x-4">
-                <Button type="button" variant="outline" onClick={handleCancel}>
-                  Cancel
-                </Button>
+              <div className="flex justify-end">
                 <Button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={mutation.isPending}
                   className="bg-slate-600 hover:bg-slate-700"
                 >
-                  {isLoading ? "Updating..." : "Update Category"}
+                  <span className="mr-2">
+                    <Save />
+                  </span>
+                  {mutation.isPending ? "Saving..." : "Save"}
                 </Button>
               </div>
             </form>
@@ -191,5 +261,5 @@ export default function EditCategoryPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,14 +1,12 @@
 "use client";
 import type React from "react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
-
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-// import { useToast } from "@/hooks/use-toast";
 import { Save, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
@@ -19,27 +17,61 @@ declare module "next-auth" {
   }
 }
 
-export default function AddPracticeAreaPage() {
+export default function EditPracticeAreaPage() {
   const router = useRouter();
-  // const { toast } = useToast();
-
+  const { id } = useParams(); // Get practice area ID from URL
   const session = useSession();
-  console.log("session", session);
-
   const TOKEN = session?.data?.accessToken;
 
+  // Fetch practice area data
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["practiceArea", id],
+    queryFn: async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/practice-area/${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${TOKEN}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to fetch practice area");
+      }
+      return response.json();
+    },
+    enabled: !!id && !!TOKEN, // Only fetch if id and token are available
+  });
+
+  // Initialize form data with fetched data or default values
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     subPracticeAreas: [""], // Initialize with one empty subcategory
   });
 
+  // Update form data when fetched data is available
+  useEffect(() => {
+    if (data?.data) {
+      setFormData({
+        name: data.data.name || "",
+        description: data.data.description || "",
+        subPracticeAreas: data.data.subPracticeAreas?.length
+          ? data.data.subPracticeAreas
+          : [""], // Ensure at least one empty subcategory
+      });
+    }
+  }, [data]);
+
   const mutation = useMutation({
     mutationFn: async (data: typeof formData) => {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/practice-area`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/practice-area/${id}`,
         {
-          method: "POST",
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${TOKEN}`,
@@ -50,13 +82,13 @@ export default function AddPracticeAreaPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to create practice-area");
+        throw new Error(errorData.message || "Failed to update practice area");
       }
 
       return response.json();
     },
     onSuccess: (success) => {
-      toast.success(success.message);
+      toast.success(success.message || "Practice area updated successfully");
       router.push("/practice-area");
     },
     onError: (error) => {
@@ -108,20 +140,30 @@ export default function AddPracticeAreaPage() {
     mutation.mutate(filteredData);
   };
 
+  if (isLoading) {
+    return <div className="p-6 bg-[#EDEEF1]">Loading...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 bg-[#EDEEF1]">
+        <p className="text-red-500">Error: {error.message}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen bg-[#EDEEF1] p-6">
       <div className="flex-1 overflow-auto">
         <div>
           <div className="mb-6">
             <h1 className="text-2xl font-semibold text-gray-900">
-              Add Practice-area
+              Edit Practice-area
             </h1>
             <p className="text-gray-500">Dashboard &gt; Practice-area</p>
           </div>
 
           <div className="pt-10">
-            {/* <h2 className="text-lg font-semibold mb-6">General Information</h2> */}
-
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <Label htmlFor="name">Practice-area Name</Label>
