@@ -7,8 +7,7 @@ import { useSession } from "next-auth/react";
 export default function Header() {
   const session = useSession();
   const user = session?.data?.user
-  console.log('user', user);
-
+ 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between px-6 bg-[#525773] shadow-md">
       <div className="flex items-center space-x-2"></div>
