@@ -35,6 +35,7 @@ import "react-quill/dist/quill.snow.css";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // Import React Quill dynamically to avoid SSR issues
 const ReactQuill = dynamic(() => import("react-quill"), {
@@ -97,6 +98,7 @@ export default function ResourceForm() {
   const [selectedSubAreas, setSelectedSubAreas] = useState<string[]>([]);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isDrafting, setIsDrafting] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false)
 
   const [formData, setFormData] = useState<FormDataState>({
     title: "",
@@ -191,7 +193,6 @@ export default function ResourceForm() {
     );
   };
 
-  console.log(singelPracticeArea)
   useEffect(() => {
     if (singelPracticeArea) {
       setPracticeArea(singelPracticeArea.name);
@@ -299,7 +300,7 @@ export default function ResourceForm() {
   });
 
   const handleInputChange = (field: keyof FormDataState, value: string) => {
-    console.log(`Input changed: ${field} = ${value}`);
+
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (field === "practiceArea") {
       setPracticeArea(value);
@@ -856,9 +857,10 @@ export default function ResourceForm() {
                   </Label>
                   <Select
                     value={formData.resourceType}
-                    onValueChange={(value) =>
+                    onValueChange={(value) => {
+
                       handleInputChange("resourceType", value)
-                    }
+                    }}
                   >
                     <SelectTrigger className="h-[49px] border border-gray-400">
                       <SelectValue placeholder="Select a resource type" />
@@ -1050,6 +1052,9 @@ export default function ResourceForm() {
                 </div>
               </CardContent>
             </Card>
+            <Button className="w-full" onClick={() => setPreviewOpen(true)}>
+              Preview
+            </Button>
             <div className="flex gap-4 items-center justify-center">
               <Button
                 onClick={() => handleSubmit("publish")}
@@ -1069,6 +1074,64 @@ export default function ResourceForm() {
             </div>
           </div>
         </div>
+        <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Preview Data</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              <p><strong>Title:</strong> {formData.title}</p>
+              <p><strong>Price:</strong> {formData.price}</p>
+              <p><strong>Discount Price:</strong> {formData.discountPrice}</p>
+              <p><strong>Quantity:</strong> {formData.quantity}</p>
+              <p><strong>Format:</strong> {formData.format}</p>
+              <p><strong>Country:</strong> {formData.country}</p>
+              <p><strong>Product Status:</strong> {formData.productStatus}</p>
+              <p><strong>States:</strong> {formData.states.join(", ")}</p>
+              <p><strong>Description:</strong> {formData.description}</p>
+              <p><strong>Practice Area:</strong> {practiceArea}</p>
+              {/* <p><strong>Resource Type:</strong> {resourcePreview}</p> */}
+
+              {/* Thumbnail Preview */}
+              {formData.thumbnail && (
+                <div>
+                  <strong>Thumbnail:</strong>
+                  <Image
+                    width={100}
+                    height={100}
+                    src={URL.createObjectURL(formData.thumbnail)}
+                    alt="Thumbnail Preview"
+                    className="w-32 h-32 object-cover border"
+                  />
+                </div>
+              )}
+
+              {/* File Name */}
+              {formData.file && (
+                <p><strong>File:</strong> {formData.file.name}</p>
+              )}
+
+              {/* Images Preview */}
+              {formData.images.length > 0 && (
+                <div>
+                  <strong>Images:</strong>
+                  <div className="flex gap-2 flex-wrap">
+                    {formData.images.map((img, idx) => (
+                      <Image
+                        width={100}
+                        height={100}
+                        key={idx}
+                        src={URL.createObjectURL(img)}
+                        alt={`Image ${idx + 1}`}
+                        className="w-24 h-24 object-cover border"
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
