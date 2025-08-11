@@ -235,7 +235,9 @@ export default function ResourceForm() {
       currentFormData.states.forEach((state) => {
         submitData.append("states[]", state);
       });
-
+      selectedSubAreas.forEach((subAreaId) => {
+        submitData.append("subPracticeAreas[]", subAreaId);
+      });
       const practiceAreaObj = practiceAreasData?.find(
         (p) => p._id === currentFormData.practiceArea
       );
@@ -507,7 +509,7 @@ export default function ResourceForm() {
     // Clone formData and add productStatus
     const formDataToSubmit: FormDataState = {
       ...formData,
-      productStatus: action === "publish" ? "approved" : "draft", // ✅ This line adds productStatus
+      productStatus: action === "publish" ? "approved" : "draft",
     };
 
     const dataToLog = {
