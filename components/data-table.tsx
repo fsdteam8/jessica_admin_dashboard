@@ -171,6 +171,8 @@ export function DataTable<
     return buttons;
   };
 
+  console.log(data)
+
   return (
     <div className="space-y-4">
       <div className="rounded-lg border">
