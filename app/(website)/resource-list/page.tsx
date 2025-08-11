@@ -16,6 +16,7 @@ interface ApiResourceRequest {
   _id: string;
   title: string;
   country: string;
+  
   states: string[];
   resourceType: string[];
   description: string;
@@ -57,6 +58,7 @@ interface ApiResponse {
 
 interface ExtendedProduct extends Product {
   originalId: string;
+  status: string; // Added status property
 }
 
 // Fetch resources with pagination
@@ -131,6 +133,7 @@ const transformResourceData = (
           minute: "2-digit",
         }),
       thumbnail: resource.thumbnail || "/placeholder.svg?height=40&width=40",
+      status: resource.status || "Unknown",
     })
   );
 };
@@ -158,6 +161,7 @@ const columns = [
   { key: "discountPrice", label: "Discount Price" },
   { key: "quantity", label: "Quantity" },
   { key: "format", label: "Format" },
+  { key: "status", label: "status" },
   {
     key: "date",
     label: "Date",
@@ -246,12 +250,12 @@ export default function ResourceListPage() {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-
+console.log(resourcesResponse?.data)
   const tableData = resourcesResponse?.data
     ? transformResourceData(resourcesResponse.data)
     : [];
   const pagination = resourcesResponse?.pagination;
-
+console.log(tableData)
   const isEmpty = (arr: ExtendedProduct[]) => !arr || arr.length === 0;
 
   if (isLoading) {
