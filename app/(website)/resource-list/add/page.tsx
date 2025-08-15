@@ -1088,9 +1088,9 @@ export default function ResourceForm() {
               <p><strong>Quantity:</strong> {formData.quantity}</p>
               <p><strong>Format:</strong> {formData.format}</p>
               <p><strong>Country:</strong> {formData.country}</p>
-              <p><strong>Product Status:</strong> {formData.productStatus}</p>
+              {/* <p><strong>Product Status:</strong> {}</p> */}
               <p><strong>States:</strong> {formData.states.join(", ")}</p>
-              <p><strong>Description:</strong> {formData.description}</p>
+              {/* <p><strong>Description:</strong> {formData.description}</p> */}
               <p><strong>Practice Area:</strong> {practiceArea}</p>
               {/* <p><strong>Resource Type:</strong> {resourcePreview}</p> */}
 
