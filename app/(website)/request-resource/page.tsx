@@ -112,7 +112,7 @@ const fetchResources = async (): Promise<ResourceRequest[]> => {
     throw new Error(data.message || "Failed to fetch resources");
   }
 
-  console.log(data)
+  console.log(data?.pagination)
 
   const pendingResources = data.data
     .filter((resource: ApiResourceRequest) => resource.status === "pending")

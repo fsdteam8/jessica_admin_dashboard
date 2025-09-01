@@ -69,6 +69,8 @@ export function DataTable<
   const startItem = (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
+  console.log("totalItems  data", totalItems);
+
   const handleDeleteClick = (item: T) => {
     setDeleteItem(item);
     // console.log("first item", item)
@@ -284,13 +286,13 @@ export function DataTable<
       </div>
 
       {totalItems > 0 && (
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between ">
           <p className="text-sm text-gray-700">
             Showing <span className="font-medium">{startItem}</span> to{" "}
             <span className="font-medium">{endItem}</span> of{" "}
             <span className="font-medium">{totalItems}</span> results
           </p>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 ">
             {renderPaginationButtons()}
           </div>
         </div>
