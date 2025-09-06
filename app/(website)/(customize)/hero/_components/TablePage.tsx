@@ -277,7 +277,7 @@ export default function TablePage() {
                                 {Array.isArray(data) && data.map((item) => (
                                     <tr key={item._id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
                                         <td className="p-4">
-                                            <div className="w-16 h-16 relative">
+                                            <div className="w-[200px] h-16 relative">
                                                 <Image
                                                     src={item.image}
                                                     alt={item.name}
