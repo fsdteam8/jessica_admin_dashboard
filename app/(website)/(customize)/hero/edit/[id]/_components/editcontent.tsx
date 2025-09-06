@@ -148,12 +148,12 @@ const Editcontent: React.FC<EditcontentProps> = ({ id }) => {
             <div className="flex justify-center">
               <div
                 onClick={handleImageClick}
-                className="w-32 h-32 rounded-full border-2 border-gray-300 dark:border-gray-600 cursor-pointer overflow-hidden shadow hover:opacity-80 transition-all"
+                className="w-[210px] h-32 border-2 border-gray-300 dark:border-gray-600 cursor-pointer overflow-hidden shadow hover:opacity-80 transition-all"
               >
                 <Image
                   src={imagePreview}
-                  width={128}
-                  height={128}
+                  width={500}
+                  height={500}
                   alt="Hero Image"
                   className="object-cover w-full h-full"
                 />
