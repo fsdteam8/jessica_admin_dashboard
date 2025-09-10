@@ -145,7 +145,7 @@ export default function ResourceTypePage() {
   };
 
   return (
-    <div className="w-full">
+    <div className="">
       <div className="p-6 bg-[#EDEEF1] min-h-screen">
         <div className="mb-10">
           <PageHeader
