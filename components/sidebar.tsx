@@ -117,6 +117,7 @@ import {
   ChevronDown,
   ChevronUp,
   Layers,
+  WholeWord,
 } from "lucide-react";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
@@ -135,6 +136,7 @@ const navigation = [
     icon: DollarSign,
   },
   { name: "Blog Management", href: "/blog-management", icon: FileText },
+   { name: "Country", href: "/country", icon: WholeWord },
   { name: "Seller Profile", href: "/seller-profile", icon: User },
   { name: "User Profile", href: "/user-profile", icon: User },
   { name: "NewsLetter", href: "/news-letter", icon: Mails },
