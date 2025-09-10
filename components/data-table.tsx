@@ -178,19 +178,22 @@ export function DataTable<
   return (
     <div className="space-y-4">
       <div className="rounded-lg border">
-        <Table className="border border-[#707070]">
+        <Table className="border border-[#707070] table-fixed w-full">
           <TableHeader>
             <TableRow className="border border-[#707070]">
               {columns.map((column) => (
                 <TableHead
                   key={String(column.key)}
-                  className="font-semibold text-gray-900 text-left px-4 py-2"
+                  className="font-semibold text-gray-900 text-left px-4 py-2 truncate"
+                  style={{ width: column.width || "150px" }} // default fixed width
                 >
                   {column.label}
                 </TableHead>
               ))}
               {(onEdit || onDelete) && (
-                <TableHead className="font-semibold text-gray-900 text-center pl-2 py-2">
+                <TableHead
+                  className="font-semibold text-gray-900 text-center pl-2 py-2 w-[120px]" // fixed width for Action column
+                >
                   Action
                 </TableHead>
               )}
@@ -215,8 +218,8 @@ export function DataTable<
                   {columns.map((column) => (
                     <TableCell
                       key={String(column.key)}
-                      className="text-left px-4 py-5 whitespace-nowrap"
-                      style={{ width: column.width || "auto" }}
+                      className="text-left px-4 py-5 whitespace-nowrap truncate"
+                      style={{ width: column.width || "150px" }} // same width control as header
                     >
                       {column.render
                         ? column.render(row[column.key as keyof T], row)
@@ -224,7 +227,7 @@ export function DataTable<
                     </TableCell>
                   ))}
                   {(onEdit || onDelete) && (
-                    <TableCell className="text-center px-4 py-2">
+                    <TableCell className="text-center px-4 py-2 w-[120px]">
                       <div className="flex justify-center items-center space-x-2">
                         {onEdit && (
                           <Button
@@ -253,28 +256,20 @@ export function DataTable<
                             )}
                           </Button>
                         )}
-                        {/* SMS / Chat Button */}
-                        {/* Conditionally render: */}
-                        {["/request-resource", "/resource-list"].includes(
-                          pathname
-                        ) && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => {
-                                setIsChatOpen(true);
-                                setSelectedResourceId(row.originalId);
-                                console.log(
-                                  "Selected Resource ID:",
-                                  row.originalId
-                                );
-                              }}
-                              className="text-[#424242] hover:text-green-600"
-                              title="Message"
-                            >
-                              <MessageCircle className="w-4 h-4" />
-                            </Button>
-                          )}
+                        {["/request-resource", "/resource-list"].includes(pathname) && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setIsChatOpen(true);
+                              setSelectedResourceId(row.originalId);
+                            }}
+                            className="text-[#424242] hover:text-green-600"
+                            title="Message"
+                          >
+                            <MessageCircle className="w-4 h-4" />
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   )}
@@ -283,6 +278,7 @@ export function DataTable<
             )}
           </TableBody>
         </Table>
+
       </div>
 
       {totalItems > 0 && (
