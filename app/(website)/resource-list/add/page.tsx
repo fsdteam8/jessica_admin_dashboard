@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check, ChevronDown, FileText, ImageIcon, X } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useState, useEffect, useRef } from "react";
@@ -36,6 +36,7 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
 
 // Import React Quill dynamically to avoid SSR issues
 const ReactQuill = dynamic(() => import("react-quill"), {
@@ -113,6 +114,8 @@ export default function ResourceForm() {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isDrafting, setIsDrafting] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const router = useRouter();
+  const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState<FormDataState>({
     title: "",
@@ -299,6 +302,7 @@ export default function ResourceForm() {
       }
       return response.json();
     },
+
     onSuccess: (data) => {
       console.log("Resource published successfully:", data);
       toast({
@@ -306,6 +310,14 @@ export default function ResourceForm() {
         description: "Resource has been published successfully.",
         variant: "default",
       });
+
+      if (isPublishing) {
+        setIsPublishing(false);
+        router.push("/resource-list");
+        queryClient.invalidateQueries({ queryKey: ["resources", "approved"] });
+      }
+
+
     },
     onError: (error: Error) => {
       console.error("Error publishing resource:", error);
@@ -536,6 +548,8 @@ export default function ResourceForm() {
 
     // Pass the updated formData with productStatus
     submitResource(formDataToSubmit);
+
+   
   };
 
   const filteredStates =
