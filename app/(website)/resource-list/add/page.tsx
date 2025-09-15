@@ -35,7 +35,12 @@ import "react-quill/dist/quill.snow.css";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 
 // Import React Quill dynamically to avoid SSR issues
@@ -126,7 +131,7 @@ export default function ResourceForm() {
     country: "",
     productStatus: "",
     states: [],
-    divisions: [], 
+    divisions: [],
     description: "",
     practiceArea: "",
     resourceType: "",
@@ -190,12 +195,15 @@ export default function ResourceForm() {
     useQuery<PracticeArea[]>({
       queryKey: ["practiceAreas-all"],
       queryFn: async () => {
-        const response = await fetch(`${API_BASE_URL}/api/v1/practice-area/all`, {
-          headers: {
-            Authorization: `Bearer ${API_TOKEN}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          `${API_BASE_URL}/api/v1/practice-area/all`,
+          {
+            headers: {
+              Authorization: `Bearer ${API_TOKEN}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
         if (!response.ok) throw new Error("Failed to fetch practice areas");
         const data = await response.json();
         console.log(data);
@@ -224,12 +232,15 @@ export default function ResourceForm() {
     useQuery<ResourceType[]>({
       queryKey: ["resourceTypes-all"],
       queryFn: async () => {
-        const response = await fetch(`${API_BASE_URL}/api/v1/resource-type/all`, {
-          headers: {
-            Authorization: `Bearer ${API_TOKEN}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          `${API_BASE_URL}/api/v1/resource-type/all`,
+          {
+            headers: {
+              Authorization: `Bearer ${API_TOKEN}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
         if (!response.ok) throw new Error("Failed to fetch resource types");
         const data = await response.json();
         return data.success ? data.data : [];
@@ -297,7 +308,9 @@ export default function ResourceForm() {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          `Failed to publish resource: ${errorData.message || response.statusText}`
+          `Failed to publish resource: ${
+            errorData.message || response.statusText
+          }`
         );
       }
       return response.json();
@@ -316,8 +329,6 @@ export default function ResourceForm() {
         router.push("/resource-list");
         queryClient.invalidateQueries({ queryKey: ["resources", "approved"] });
       }
-
-
     },
     onError: (error: Error) => {
       console.error("Error publishing resource:", error);
@@ -548,8 +559,6 @@ export default function ResourceForm() {
 
     // Pass the updated formData with productStatus
     submitResource(formDataToSubmit);
-
-   
   };
 
   const filteredStates =
@@ -562,7 +571,9 @@ export default function ResourceForm() {
       .filter((state) => selectedStates.includes(state.stateName))
       .flatMap((state) => state.divisions)
       .filter((division) =>
-        division.divisionName.toLowerCase().includes(divisionSearch.toLowerCase())
+        division.divisionName
+          .toLowerCase()
+          .includes(divisionSearch.toLowerCase())
       ) || [];
 
   useEffect(() => {
@@ -746,7 +757,9 @@ export default function ResourceForm() {
                                 <CommandItem
                                   key={state.stateName}
                                   value={state.stateName}
-                                  onSelect={() => handleStateToggle(state.stateName)}
+                                  onSelect={() =>
+                                    handleStateToggle(state.stateName)
+                                  }
                                 >
                                   <Check
                                     className={cn(
