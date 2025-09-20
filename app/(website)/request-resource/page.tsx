@@ -112,10 +112,10 @@ const fetchResources = async (): Promise<ResourceRequest[]> => {
     throw new Error(data.message || "Failed to fetch resources");
   }
 
-  console.log(data?.pagination)
+  console.log(data)
 
-  const pendingResources = data.data
-    .filter((resource: ApiResourceRequest) => resource.status === "pending")
+  const pendingResources = data?.data
+    .filter((resource: ApiResourceRequest) => resource?.status === "pending")
     .map((resource: ApiResourceRequest) => ({
       id: resource.productId,
       name: resource.title, 
@@ -318,8 +318,8 @@ export default function RequestResourcePage() {
       },
     },
     { key: "_id", label: "ID" },
-    { key: "price", label: "Price" },
-    { key: "discountPrice", label: "Discount Price" },
+    // { key: "price", label: "Price" },
+    { key: "discountPrice", label: "Price" },
     { key: "quantity", label: "Quantity" },
     { key: "format", label: "Format" },
     {

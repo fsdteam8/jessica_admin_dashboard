@@ -41,7 +41,7 @@ const NewsLetterForm = () => {
     mutationKey: ["newsletter-subscribe"],
     mutationFn: (data: z.infer<typeof FormSchema>) =>
       fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/newsletter/broadcast`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/newsletter/0broadcast`,
         {
           method: "POST",
           headers: {
