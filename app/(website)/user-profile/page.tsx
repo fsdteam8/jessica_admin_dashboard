@@ -214,16 +214,16 @@ export default function UserProfilePage() {
             </Card> */}
           </div>
 
-          <div className="mb-4 flex items-center justify-between">
+          {/* <div className="mb-4 flex items-center justify-between">
             <p className="text-sm text-gray-600">
-              Showing {displayUsers.length} of {totalItems} users
+              Showing {displayUsers.length} of {totalItems} users 
             </p>
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-600">
                 Page {currentPage} of {totalPages}
               </span>
             </div>
-          </div>
+          </div> */}
 
           <DataTable
             columns={columns}

@@ -254,13 +254,11 @@
 //     );
 //   };
 
-
 //   useEffect(() => {
 //     if (singelPracticeArea) {
 //       setPracticeArea(singelPracticeArea.name);
 //     }
 //   }, [singelPracticeArea]);
-
 
 //   const { data: resourceTypesData, isLoading: isLoadingResourceTypes } =
 //     useQuery<ResourceType[]>({
@@ -629,12 +627,10 @@
 
 //   const handleSubmit = useCallback((action: "publish" | "draft") => {
 
-
 //     const formDataToSubmit: FormDataState = {
 //       ...formData,
 //       productStatus: action === "publish" ? "approved" : "draft",
 //     };
-
 
 //     updateResource(formDataToSubmit);
 //   }, [updateResource, formData]);
@@ -951,7 +947,6 @@
 //                   </Select>
 //                 </div>
 
-
 //                 {/* {singelPracticeArea && singelPracticeArea.subPracticeAreas?.map((subArea) => (
 //                   <div key={subArea._id} className="mt-2">
 //                     <Label className="text-sm font-medium">
@@ -983,8 +978,6 @@
 //                     <pre>{JSON.stringify(selectedSubAreas, null, 2)}</pre>
 //                   </div> */}
 //                 </div>
-
-
 
 //                 <div className="space-y-2 mt-4">
 //                   <Label className="text-base font-semibold">
@@ -1331,16 +1324,10 @@
 //   );
 // }
 
-
-
-
-
-
-
 "use client";
 
 import type React from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -1383,7 +1370,12 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { PageHeader } from "@/components/page-header";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 // Import React Quill dynamically to avoid SSR issues
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
@@ -1476,7 +1468,12 @@ export default function EditPage() {
   const [selectedSubAreas, setSelectedSubAreas] = useState<string[]>([]);
   const [practiceArea, setPracticeArea] = useState("");
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [existingThumbnail, setExistingThumbnail] = useState<string | null>(null);
+  const [existingThumbnail, setExistingThumbnail] = useState<string | null>(
+    null
+  );
+  const router = useRouter();
+  const [isDrafting, setIsDrafting] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
   const [existingFile, setExistingFile] = useState<{
     url: string;
     type: string;
@@ -1600,14 +1597,11 @@ export default function EditPage() {
     (p) => p.name.toLowerCase() === practiceArea.toLowerCase()
   );
 
-  const handleCheckboxChange = useCallback(
-    (id: string, checked: boolean) => {
-      setSelectedSubAreas((prev) =>
-        checked ? [...prev, id] : prev.filter((item) => item !== id)
-      );
-    },
-    []
-  );
+  const handleCheckboxChange = useCallback((id: string, checked: boolean) => {
+    setSelectedSubAreas((prev) =>
+      checked ? [...prev, id] : prev.filter((item) => item !== id)
+    );
+  }, []);
 
   useEffect(() => {
     if (singelPracticeArea) {
@@ -1698,8 +1692,10 @@ export default function EditPage() {
   ]);
 
   // Update resource mutation
-  const { mutate: updateResource, isPending: isSubmitting } = useMutation({
+  const { mutate: updateResource } = useMutation({
     mutationFn: async (currentFormData: FormDataState) => {
+           if (currentFormData.productStatus === "approved") setIsPublishing(true);
+      if (currentFormData.productStatus === "draft") setIsDrafting(true);
       console.log("Submitting resource with data:", currentFormData);
       const submitData = new FormData();
       submitData.append("title", currentFormData.title);
@@ -1758,7 +1754,9 @@ export default function EditPage() {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          `Failed to update resource: ${errorData.message || response.statusText}`
+          `Failed to update resource: ${
+            errorData.message || response.statusText
+          }`
         );
       }
       return response.json();
@@ -1819,24 +1817,30 @@ export default function EditPage() {
       console.log("Resource updated successfully:", data);
 
       // Invalidate all related queries to ensure fresh data
-      queryClient.invalidateQueries({ queryKey: ["resource", slug] });
-      queryClient.invalidateQueries({ queryKey: ["resources", "approved"] });
-      queryClient.invalidateQueries({ queryKey: ["resources"] });
-
-      // Refetch the list immediately to ensure it's updated
-      queryClient.refetchQueries({ queryKey: ["resources", "approved"] });
+      // queryClient.invalidateQueries({ queryKey: ["resource", slug] });
+      // queryClient.invalidateQueries({ queryKey: ["resources", "approved"] });
+      // queryClient.invalidateQueries({ queryKey: ["resources"] });
+      // queryClient.refetchQueries({ queryKey: ["resources", "approved"] });
 
       toast({
         title: "Success!",
         description: "Resource has been updated successfully.",
         variant: "default",
       });
+      if (isPublishing) {
+        setIsPublishing(false);
+        router.push("/resource-list");
+        queryClient.invalidateQueries({ queryKey: ["resources"] });
+      } else if (isDrafting) {
+        setIsDrafting(false);
+        router.push("/resource-list");
+        queryClient.invalidateQueries({ queryKey: ["resources"] });
+      }
     },
-    onSettled: () => {
-      // Always refetch after error or success to ensure we have the latest data
-      queryClient.invalidateQueries({ queryKey: ["resource", slug] });
-      queryClient.invalidateQueries({ queryKey: ["resources", "approved"] });
-    },
+    // onSettled: () => {
+    //   queryClient.invalidateQueries({ queryKey: ["resource", slug] });
+    //   queryClient.invalidateQueries({ queryKey: ["resources", "approved"] });
+    // },
   });
 
   // Optimized input change handler
@@ -2024,7 +2028,9 @@ export default function EditPage() {
         .filter((state) => selectedStates.includes(state.stateName))
         .flatMap((state) => state.divisions)
         .filter((division) =>
-          division.divisionName.toLowerCase().includes(divisionSearch.toLowerCase())
+          division.divisionName
+            .toLowerCase()
+            .includes(divisionSearch.toLowerCase())
         ) || [],
     [selectedCountry?.states, selectedStates, divisionSearch]
   );
@@ -2098,8 +2104,8 @@ export default function EditPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="space-y-2">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* <div className="space-y-2">
                     <Label htmlFor="price" className="text-base font-semibold">
                       Price
                     </Label>
@@ -2112,7 +2118,7 @@ export default function EditPage() {
                         handleInputChange("price", e.target.value)
                       }
                     />
-                  </div>
+                  </div> */}
                   <div className="space-y-2">
                     <Label
                       className="text-base font-semibold"
@@ -2246,7 +2252,9 @@ export default function EditPage() {
                                 <CommandItem
                                   key={state.stateName}
                                   value={state.stateName}
-                                  onSelect={() => handleStateToggle(state.stateName)}
+                                  onSelect={() =>
+                                    handleStateToggle(state.stateName)
+                                  }
                                 >
                                   <Check
                                     className={cn(
@@ -2391,7 +2399,9 @@ export default function EditPage() {
                         <Checkbox
                           id={subArea.name}
                           checked={selectedSubAreas.includes(subArea.name)}
-                          onCheckedChange={(checked: boolean | "indeterminate") =>
+                          onCheckedChange={(
+                            checked: boolean | "indeterminate"
+                          ) =>
                             handleCheckboxChange(subArea.name, Boolean(checked))
                           }
                         />
@@ -2675,16 +2685,16 @@ export default function EditPage() {
               <Button
                 onClick={() => handleSubmit("publish")}
                 className="w-full"
-                disabled={isSubmitting}
+                disabled={isPublishing}
               >
-                {isSubmitting ? "Publishing..." : "Publish Resources"}
+                {isPublishing ? "Publishing..." : "Publish Resources"}
               </Button>
               <Button
                 onClick={() => handleSubmit("draft")}
                 className="w-full"
-                disabled={isSubmitting}
+                disabled={isDrafting}
               >
-                {isSubmitting ? "Drafting..." : "Draft"}
+                {isDrafting ? "Drafting..." : "Draft"}
               </Button>
             </div>
           </div>
