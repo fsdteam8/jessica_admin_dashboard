@@ -151,6 +151,7 @@ const customizeSubItems = [
   { name: "Terms & Conditions", href: "/tmc" },
   { name: "Best Sellers", href: "/best_Sellers" },
   { name: "Legal Documents", href: "/documents" },
+  { name: "Contact", href: "/contact" },
 ];
 
 export function Sidebar() {
