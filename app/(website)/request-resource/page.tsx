@@ -112,7 +112,6 @@ const fetchResources = async (): Promise<ResourceRequest[]> => {
     throw new Error(data.message || "Failed to fetch resources");
   }
 
-  console.log(data)
 
   const pendingResources = data?.data
     .filter((resource: ApiResourceRequest) => resource?.status === "pending")
@@ -202,7 +201,6 @@ export default function RequestResourcePage() {
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
-  console.log("Requests:", requests);
   const statusMutation = useMutation({
     mutationFn: ({
       resourceId,
@@ -369,7 +367,6 @@ export default function RequestResourcePage() {
             onClick={() => {
               setIsChatOpen(true);
               setSelectedResourceId(row._id);
-              console.log("Selected Resource ID:", row._id);
             }}
             className="text-[#424242] hover:text-green-600"
             title="Message"

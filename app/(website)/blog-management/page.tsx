@@ -126,8 +126,6 @@ export default function BlogManagementPage() {
   const itemsPerPage = 10
 
   const session = useSession();
-  console.log("session", session);
-
   const TOKEN = session?.data?.accessToken;
 
   // Set up query client for cache invalidation
@@ -177,8 +175,6 @@ export default function BlogManagementPage() {
     },
   })
 
-  console.log("blogs", blogsResponse?.data)
-
   // Get the actual blogs array from the response
   const allBlogs = blogsResponse?.data || []
 
@@ -202,7 +198,6 @@ export default function BlogManagementPage() {
   const handleDelete = async (blog: Blog) => {
     try {
       await deleteMutation.mutateAsync(blog)
-      console.log("Blog deleted successfully:", blog.title)
       // You can add toast notification here for success
     } catch (error) {
       console.error("Failed to delete blog:", error)

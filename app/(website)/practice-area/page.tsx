@@ -95,8 +95,6 @@ export default function CategoriesPage() {
   const itemsPerPage = 10;
 
   const session = useSession();
-  console.log("session", session);
-
   const TOKEN = session?.data?.accessToken;
 
   // Set up query client for cache invalidation
@@ -122,7 +120,6 @@ export default function CategoriesPage() {
     },
   });
 
-  console.log("data", data);
   // Set up delete mutation with TanStack Query
   const deleteMutation = useMutation({
     mutationFn: async (practiceArea: PracticeArea) => {
@@ -186,7 +183,6 @@ export default function CategoriesPage() {
   const handleDelete = async (category: PracticeArea) => {
     try {
       await deleteMutation.mutateAsync(category);
-      console.log("Practice area deleted successfully:", category.name);
     } catch (error) {
       console.error("Failed to delete practice area:", error);
       // Error is already handled in the mutation's onError callback

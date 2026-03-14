@@ -60,8 +60,6 @@ const pieColors = [
 
 export default function Dashboard() {
   const session = useSession();
-  console.log("session", session);
-
   const TOKEN = session?.data?.accessToken;
 
   const [selectedRevenuePeriod, setSelectedRevenuePeriod] = useState<

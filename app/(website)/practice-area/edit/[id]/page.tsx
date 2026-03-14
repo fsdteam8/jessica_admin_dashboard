@@ -146,7 +146,6 @@ export default function EditPracticeAreaPage() {
     };
 
     // Log form data
-    console.log("Form Data Submitted:", filteredData);
 
     mutation.mutate(filteredData);
   };

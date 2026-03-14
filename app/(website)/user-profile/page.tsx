@@ -101,20 +101,6 @@ const columns = [
   { key: "deliveredOrder", label: "Delivered Order" },
   { key: "pendingOrder", label: "Pending Order" },
   { key: "cancelOrder", label: "Cancel Order" },
-  // {
-  //   key: "action",
-  //   label: "Action",
-  //   render: (_: unknown, row: DisplayUser) => (
-  //     <Button
-  //       variant="outline"
-  //       size="sm"
-  //       className="bg-slate-600 text-white hover:bg-slate-700"
-  //       onClick={() => console.log("View details for user:", row.id)}
-  //     >
-  //       Details
-  //     </Button>
-  //   ),
-  // },
 ];
 
 export default function UserProfilePage() {

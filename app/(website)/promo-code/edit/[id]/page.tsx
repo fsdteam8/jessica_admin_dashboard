@@ -67,7 +67,6 @@ const createSafeDate = (dateString: string): Date | undefined => {
 
 // API Functions
 const fetchPromoCode = async (id: string): Promise<ApiResponse> => {
-  console.log(`Fetching promo code with ID: ${id}`);
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/promo-codes/${id}`,
@@ -78,8 +77,6 @@ const fetchPromoCode = async (id: string): Promise<ApiResponse> => {
       },
     }
   );
-
-  console.log("Fetch response status:", response.status);
 
   if (!response.ok) {
     const errorData = await response
@@ -92,7 +89,6 @@ const fetchPromoCode = async (id: string): Promise<ApiResponse> => {
   }
 
   const data = await response.json();
-  console.log("Fetched data:", data);
   return data;
 };
 
@@ -109,7 +105,6 @@ const updatePromoCode = async (
     active: data.status === "Active",
   };
 
-  console.log("Update payload:", payload);
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/promo-codes/${id}`,
@@ -123,8 +118,6 @@ const updatePromoCode = async (
     }
   );
 
-  console.log("Update response status:", response.status);
-
   if (!response.ok) {
     const errorData = await response
       .json()
@@ -136,7 +129,6 @@ const updatePromoCode = async (
   }
 
   const result = await response.json();
-  console.log("Update result:", result);
   return result;
 };
 
@@ -148,7 +140,6 @@ export default function EditCodePage() {
   const codeId = params.id as string;
 
   const { data: session } = useSession(); // Destructure properly
-  console.log("session", session);
 
   const [formData, setFormData] = useState<PromoCodeFormData>({
     code: "",
@@ -163,7 +154,6 @@ export default function EditCodePage() {
   // Update mutation
   const updateMutation = useMutation({
     mutationFn: (data: PromoCodeFormData) => {
-      console.log("Mutation called with data:", data);
 
       // Check if token exists
       if (!session?.accessToken) {
@@ -173,7 +163,6 @@ export default function EditCodePage() {
       return updatePromoCode(codeId, data, session.accessToken);
     },
     onSuccess: (data) => {
-      console.log("Update successful:", data);
       queryClient.invalidateQueries({ queryKey: ["promoCodes"] });
 
       toast({
@@ -213,9 +202,6 @@ export default function EditCodePage() {
           const promoCode = response.data;
 
           const expiryDate = createSafeDate(promoCode.expiryDate);
-
-          console.log("Original expiryDate:", promoCode.expiryDate);
-          console.log("Parsed expiryDate:", expiryDate);
 
           setFormData({
             code: promoCode.code,
@@ -343,9 +329,6 @@ export default function EditCodePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    console.log("Form submitted with data:", formData);
-
     // Check authentication before validation
     if (!session?.accessToken) {
       toast({
@@ -368,7 +351,6 @@ export default function EditCodePage() {
       return;
     }
 
-    console.log("Form validation passed, calling mutation...");
     updateMutation.mutate(formData);
   };
 

@@ -38,7 +38,6 @@ export default function AddBlogPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const session = useSession();
-  console.log("session", session);
 
   const TOKEN = session?.data?.accessToken;
 
@@ -137,13 +136,6 @@ export default function AddBlogPage() {
         setThumbnailPreview(e.target?.result as string);
       };
       reader.readAsDataURL(file);
-
-      console.log("Uploaded file:", {
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        lastModified: file.lastModified,
-      });
     }
   };
 
@@ -153,12 +145,10 @@ export default function AddBlogPage() {
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-    console.log("Thumbnail removed");
   };
 
   const handleDescriptionChange = (content: string) => {
     setFormData({ ...formData, description: content });
-    console.log("Description changed:", content);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -181,21 +171,6 @@ export default function AddBlogPage() {
     if (thumbnail) {
       blogFormData.append("thumbnail", thumbnail);
     }
-
-    console.log("=== BLOG FORM DATA ===");
-    console.log("Title:", formData.title);
-    console.log("Description:", formData.description);
-    console.log(
-      "Thumbnail:",
-      thumbnail
-        ? {
-            name: thumbnail.name,
-            size: thumbnail.size,
-            type: thumbnail.type,
-          }
-        : null
-    );
-    console.log("======================");
 
     // Submit the form data using the mutation
     createBlogMutation.mutate(blogFormData);
@@ -240,7 +215,6 @@ export default function AddBlogPage() {
                       onChange={(e) => {
                         const newTitle = e.target.value;
                         setFormData({ ...formData, title: newTitle });
-                        console.log("Title changed:", newTitle);
                       }}
                       className="mt-3 border border-[#707070] h-[50px]"
                     />

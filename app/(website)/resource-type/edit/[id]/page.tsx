@@ -22,8 +22,6 @@ export default function EditResourceTypePage() {
   const categoryId = params.id as string;
 
   const session = useSession();
-  console.log("session", session);
-
   const TOKEN = session?.data?.accessToken;
 
   const [formData, setFormData] = useState({
@@ -48,7 +46,6 @@ export default function EditResourceTypePage() {
         );
         if (!res.ok) throw new Error("Resource not found");
         const json = await res.json();
-        console.log("json", json);
         setFormData({
           resourceTypeName: json.data.resourceTypeName,
           description: json.data.description,

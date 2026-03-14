@@ -20,8 +20,6 @@ export default function AddResourceTypePage() {
   const router = useRouter();
 
   const session = useSession();
-  console.log("session", session);
-
   const TOKEN = session?.data?.accessToken;
 
   const [formData, setFormData] = useState({

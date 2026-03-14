@@ -69,11 +69,8 @@ export function DataTable<
   const startItem = (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
-  console.log("totalItems  data", totalItems);
-
   const handleDeleteClick = (item: T) => {
     setDeleteItem(item);
-    // console.log("first item", item)
   };
 
   const handleDeleteConfirm = async () => {
@@ -173,7 +170,6 @@ export function DataTable<
     return buttons;
   };
 
-  console.log(data)
 
   return (
     <div className="space-y-4">

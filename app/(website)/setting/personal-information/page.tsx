@@ -129,8 +129,6 @@ export default function ProfilePage() {
   const session = useSession()
   const userId = session?.data?.user?.id
   const token = session?.data?.accessToken
-  // console.log(session)
-  console.log(token)
 
   const queryClient = useQueryClient()
 

@@ -93,7 +93,6 @@ const deletePromoCode = async (
   id: string,
   token: string
 ): Promise<DeleteResponse> => {
-  console.log(`Deleting promo code with ID: ${id}`);
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/promo-codes/${id}`,
@@ -106,8 +105,6 @@ const deletePromoCode = async (
     }
   );
 
-  console.log("Delete response status:", response.status);
-
   if (!response.ok) {
     const errorData = await response
       .json()
@@ -119,7 +116,6 @@ const deletePromoCode = async (
   }
 
   const result = await response.json();
-  console.log("Delete result:", result);
   return result;
 };
 
@@ -210,11 +206,9 @@ export default function PromoCodePage() {
   const itemsPerPage = 10;
 
   const { data: session } = useSession();
-  console.log("session", session);
 
   // Get the access token from session
   const accessToken = session?.accessToken;
-  // console.log("access",accessToken)
   // Fetch promo codes using TanStack Query
   const {
     data: promoCodesResponse,
@@ -240,7 +234,6 @@ export default function PromoCodePage() {
       if (!accessToken) {
         throw new Error("No access token available");
       }
-      console.log("Delete mutation called for ID:", id);
       return deletePromoCode(id, accessToken);
     },
     onMutate: async (deletedId) => {
@@ -294,7 +287,6 @@ export default function PromoCodePage() {
       });
     },
     onSuccess: (data) => {
-      console.log("Delete successful:", data);
       toast({
         title: "Success",
         description: data.message || "Promo code deleted successfully.",
@@ -315,8 +307,6 @@ export default function PromoCodePage() {
   };
 
   const handleDelete = async (code: PromoCode) => {
-    console.log("Delete handler called for code:", code);
-
     // No need for window.confirm here since DataTable handles the confirmation dialog
     try {
       await deleteMutation.mutateAsync(code._id);

@@ -10,8 +10,7 @@ interface Props {
 }
 
 const AppProvider = ({ children }: Props) => {
-const { data, status } = useSession() as { data: Session | null; status: "loading" | "authenticated" | "unauthenticated" };
-console.log(data?.user?.role)
+const {  status } = useSession() as { data: Session | null; status: "loading" | "authenticated" | "unauthenticated" };
 
   if(status === "loading") {
     return <div className="flex items-center justify-center h-screen">Loading...</div>;

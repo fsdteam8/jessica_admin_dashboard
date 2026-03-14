@@ -225,7 +225,6 @@ export default function ResourceListPage() {
     },
     onError: (err) => {
       toast.error(`${(err as Error).message || "Failed to delete resource"}`);
-      console.log("Delete failed:", err);
     },
     onSuccess: () => {
       toast.success("Delete successfully!");
@@ -250,12 +249,10 @@ export default function ResourceListPage() {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-console.log(resourcesResponse?.data)
   const tableData = resourcesResponse?.data
     ? transformResourceData(resourcesResponse.data)
     : [];
   const pagination = resourcesResponse?.pagination;
-console.log(tableData)
   const isEmpty = (arr: ExtendedProduct[]) => !arr || arr.length === 0;
 
   if (isLoading) {

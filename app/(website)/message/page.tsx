@@ -93,7 +93,6 @@ export default function MessagePage() {
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
-      console.log("Sending message:", newMessage)
       setNewMessage("")
     }
   }

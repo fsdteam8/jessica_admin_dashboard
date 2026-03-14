@@ -138,7 +138,6 @@ export default function ResourceTypePage() {
   const handleDelete = async (resource: ResourceType) => {
     try {
       await deleteMutation.mutateAsync(resource);
-      console.log("Deleted:", resource.resourceTypeName);
     } catch (error) {
       console.error("Delete error:", error);
     }

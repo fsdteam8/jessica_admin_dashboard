@@ -67,8 +67,7 @@ export default function SignInForm() {
       setIsLoading(false);
     }
   };
- const {data:session, status} = useSession()
- console.log(session, status)
+ const {status} = useSession()
   if(status === "authenticated") router.push("/")
 
   return (

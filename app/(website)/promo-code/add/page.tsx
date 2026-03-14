@@ -89,10 +89,8 @@ export default function AddCodePage() {
   const queryClient = useQueryClient();
 
   const { data: session } = useSession();
-  console.log("session", session);
 
   const accessToken = session?.accessToken;
-  console.log("acc", accessToken);
 
   const [formData, setFormData] = useState<PromoCodeFormData>({
     code: "",
